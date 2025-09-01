@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OKLCH to Hex Converter</title>
+    <script src="https://cdn.jsdelivr.net/npm/culori@3/dist/culori.umd.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .input-with-range {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        input[type="number"] {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        input[type="range"] {
+            flex: 2;
+            margin: 0;
+        }
+
+        .range-value {
+            min-width: 50px;
+            text-align: center;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .color-preview {
+            width: 100%;
+            height: 80px;
+            border-radius: 8px;
+            border: 2px solid #e1e5e9;
+            margin: 20px 0;
+            transition: all 0.2s ease;
+        }
+
+        .output-group {
+            margin-top: 30px;
+        }
+
+        .hex-output {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hex-value {
+            flex: 1;
+            padding: 12px;
+            background: #f8f9fa;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .copy-button {
+            padding: 12px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
+
+        .copy-button:hover {
+            background: #5a6fd8;
+        }
+
+        .copy-button:active {
+            background: #4c63d2;
+        }
+
+        .description {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .input-hint {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>OKLCH to Hex Converter</h1>
+        <p class="description">
+            Convert OKLCH color values to hexadecimal format. 
+            Adjust the values below and see the conversion in real-time.
+        </p>
+
+        <div class="input-group">
+            <label for="lightness">Lightness (L)</label>
+            <div class="input-with-range">
+                <input type="number" id="lightness" min="0" max="1" step="0.001" value="0.7">
+                <input type="range" id="lightness-range" min="0" max="1" step="0.001" value="0.7">
+                <span class="range-value" id="lightness-value">0.700</span>
+            </div>
+            <div class="input-hint">Range: 0 (black) to 1 (white)</div>
+        </div>
+
+        <div class="input-group">
+            <label for="chroma">Chroma (C)</label>
+            <div class="input-with-range">
+                <input type="number" id="chroma" min="0" max="0.4" step="0.001" value="0.1">
+                <input type="range" id="chroma-range" min="0" max="0.4" step="0.001" value="0.1">
+                <span class="range-value" id="chroma-value">0.100</span>
+            </div>
+            <div class="input-hint">Range: 0 (gray) to 0.4+ (vivid)</div>
+        </div>
+
+        <div class="input-group">
+            <label for="hue">Hue (H)</label>
+            <div class="input-with-range">
+                <input type="number" id="hue" min="0" max="360" step="0.1" value="250">
+                <input type="range" id="hue-range" min="0" max="360" step="0.1" value="250">
+                <span class="range-value" id="hue-value">250.0</span>
+            </div>
+            <div class="input-hint">Range: 0° to 360° (color wheel)</div>
+        </div>
+
+        <div class="color-preview" id="color-preview"></div>
+
+        <div class="output-group">
+            <label>Hex Output</label>
+            <div class="hex-output">
+                <div class="hex-value" id="hex-output">#b8a9db</div>
+                <button class="copy-button" onclick="copyHex()">Copy</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const lightnessInput = document.getElementById('lightness');
+        const lightnessRange = document.getElementById('lightness-range');
+        const lightnessValue = document.getElementById('lightness-value');
+        
+        const chromaInput = document.getElementById('chroma');
+        const chromaRange = document.getElementById('chroma-range');
+        const chromaValue = document.getElementById('chroma-value');
+        
+        const hueInput = document.getElementById('hue');
+        const hueRange = document.getElementById('hue-range');
+        const hueValue = document.getElementById('hue-value');
+        
+        const colorPreview = document.getElementById('color-preview');
+        const hexOutput = document.getElementById('hex-output');
+
+        function syncInputs(input, range, valueSpan, decimals = 3) {
+            input.addEventListener('input', () => {
+                range.value = input.value;
+                valueSpan.textContent = parseFloat(input.value).toFixed(decimals);
+                convertColor();
+            });
+
+            range.addEventListener('input', () => {
+                input.value = range.value;
+                valueSpan.textContent = parseFloat(range.value).toFixed(decimals);
+                convertColor();
+            });
+        }
+
+        syncInputs(lightnessInput, lightnessRange, lightnessValue, 3);
+        syncInputs(chromaInput, chromaRange, chromaValue, 3);
+        syncInputs(hueInput, hueRange, hueValue, 1);
+
+        function convertColor() {
+            const l = parseFloat(lightnessInput.value);
+            const c = parseFloat(chromaInput.value);
+            const h = parseFloat(hueInput.value);
+
+            // Create OKLCH color object
+            const oklchColor = {
+                mode: 'oklch',
+                l: l,
+                c: c,
+                h: h
+            };
+
+            // Convert to hex using culori
+            const hexColor = culori.formatHex(oklchColor);
+            
+            // Update outputs
+            hexOutput.textContent = hexColor;
+            colorPreview.style.backgroundColor = hexColor;
+        }
+
+        function copyHex() {
+            const hexText = hexOutput.textContent;
+            navigator.clipboard.writeText(hexText).then(() => {
+                const button = document.querySelector('.copy-button');
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 1000);
+            });
+        }
+
+        // Initial conversion
+        convertColor();
+    </script>
+</body>
+</html>
