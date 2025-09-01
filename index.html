@@ -114,6 +114,12 @@
             color: #333;
         }
 
+        .hex-value:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #fff;
+        }
+
         .copy-button {
             padding: 12px 20px;
             background: #667eea;
@@ -188,9 +194,9 @@
         <div class="color-preview" id="color-preview"></div>
 
         <div class="output-group">
-            <label>Hex Output</label>
+            <label for="hex-input">Hex Value</label>
             <div class="hex-output">
-                <div class="hex-value" id="hex-output">#b8a9db</div>
+                <input type="text" class="hex-value" id="hex-input" value="#b8a9db" placeholder="#ffffff">
                 <button class="copy-button" onclick="copyHex()">Copy</button>
             </div>
         </div>
@@ -210,7 +216,7 @@
         const hueValue = document.getElementById('hue-value');
         
         const colorPreview = document.getElementById('color-preview');
-        const hexOutput = document.getElementById('hex-output');
+        const hexInput = document.getElementById('hex-input');
 
         function syncInputs(input, range, valueSpan, decimals = 3) {
             input.addEventListener('input', () => {
@@ -230,6 +236,9 @@
         syncInputs(chromaInput, chromaRange, chromaValue, 3);
         syncInputs(hueInput, hueRange, hueValue, 1);
 
+        // Add event listener for hex input changes
+        hexInput.addEventListener('input', convertFromHex);
+
         function convertColor() {
             const l = parseFloat(lightnessInput.value);
             const c = parseFloat(chromaInput.value);
@@ -247,12 +256,52 @@
             const hexColor = culori.formatHex(oklchColor);
             
             // Update outputs
-            hexOutput.textContent = hexColor;
+            hexInput.value = hexColor;
             colorPreview.style.backgroundColor = hexColor;
         }
 
+        function convertFromHex() {
+            const hexValue = hexInput.value.trim();
+            
+            // Validate hex format
+            if (!/^#[0-9A-Fa-f]{6}$|^#[0-9A-Fa-f]{3}$/.test(hexValue)) {
+                return; // Invalid hex format, don't convert
+            }
+
+            try {
+                // Convert hex to OKLCH using culori
+                const oklchColor = culori.oklch(hexValue);
+                
+                if (oklchColor && typeof oklchColor.l === 'number') {
+                    // Update OKLCH inputs and sliders
+                    const l = Math.max(0, Math.min(1, oklchColor.l || 0));
+                    const c = Math.max(0, Math.min(0.4, oklchColor.c || 0));
+                    const h = isNaN(oklchColor.h) ? 0 : (oklchColor.h || 0) % 360;
+
+                    // Update inputs
+                    lightnessInput.value = l;
+                    lightnessRange.value = l;
+                    lightnessValue.textContent = l.toFixed(3);
+
+                    chromaInput.value = c;
+                    chromaRange.value = c;
+                    chromaValue.textContent = c.toFixed(3);
+
+                    hueInput.value = h;
+                    hueRange.value = h;
+                    hueValue.textContent = h.toFixed(1);
+
+                    // Update color preview
+                    colorPreview.style.backgroundColor = hexValue;
+                }
+            } catch (error) {
+                // Invalid color, ignore
+                console.warn('Invalid color:', hexValue);
+            }
+        }
+
         function copyHex() {
-            const hexText = hexOutput.textContent;
+            const hexText = hexInput.value;
             navigator.clipboard.writeText(hexText).then(() => {
                 const button = document.querySelector('.copy-button');
                 const originalText = button.textContent;
