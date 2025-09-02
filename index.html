@@ -151,6 +151,27 @@
             color: #888;
             margin-top: 4px;
         }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e1e5e9;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .footer .heart {
+            color: #e74c3c;
+            font-size: 1.1rem;
+            margin: 0 4px;
+            animation: heartbeat 2s infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
     </style>
 </head>
 <body>
@@ -199,6 +220,10 @@
                 <input type="text" class="hex-value" id="hex-input" value="#b8a9db" placeholder="#ffffff">
                 <button class="copy-button" onclick="copyHex()">Copy</button>
             </div>
+        </div>
+
+        <div class="footer">
+            Made for Jenn<span class="heart">♥</span>by Geoff
         </div>
     </div>
 
