@@ -163,14 +163,26 @@
 
         .footer .heart {
             color: #e74c3c;
-            font-size: 1.1rem;
+            font-size: 0.88rem;
             margin: 0 4px;
-            animation: heartbeat 2s infinite;
+            display: inline-block;
+            animation: heartbeat 2.5s ease-in-out infinite;
+            transform-origin: center;
         }
 
         @keyframes heartbeat {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            0%, 100% { 
+                transform: scale(1); 
+            }
+            25% { 
+                transform: scale(1.2); 
+            }
+            50% { 
+                transform: scale(1.1); 
+            }
+            75% { 
+                transform: scale(1.15); 
+            }
         }
     </style>
 </head>
@@ -223,7 +235,7 @@
         </div>
 
         <div class="footer">
-            Made for Jenn<span class="heart">♥</span>by Geoff
+            Made for Jenn<span class="heart">💜</span>by Geoff
         </div>
     </div>
 
