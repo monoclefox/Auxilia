@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(open index.html)",
-      "WebFetch(domain:cdn.jsdelivr.net)"
+      "WebFetch(domain:cdn.jsdelivr.net)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

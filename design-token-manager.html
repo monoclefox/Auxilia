@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Token Manager - Auxilia</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .manager-container {
+            max-width: 1400px;
+        }
+        
+        .input-section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .input-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e1e5e9;
+            padding-bottom: 15px;
+        }
+        
+        .input-tab {
+            padding: 8px 16px;
+            border: 2px solid transparent;
+            border-radius: 8px 8px 0 0;
+            background: #f8f9fa;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        
+        .input-tab.active {
+            background: white;
+            color: #667eea;
+            border-color: #e1e5e9;
+            border-bottom-color: white;
+            margin-bottom: -2px;
+        }
+        
+        .input-content {
+            display: none;
+        }
+        
+        .input-content.active {
+            display: block;
+        }
+        
+        .token-textarea {
+            width: 100%;
+            height: 300px;
+            padding: 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+            background: #f8f9fa;
+        }
+        
+        .token-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+        }
+        
+        .file-upload {
+            border: 2px dashed #e1e5e9;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            background: #f8f9fa;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .file-upload:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .file-upload.dragover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: scale(1.02);
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        
+        .upload-hint {
+            color: #999;
+            font-size: 0.9rem;
+        }
+        
+        .action-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            align-items: center;
+        }
+        
+        .parse-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .parse-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .parse-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .validation-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+        
+        .status-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+        
+        .status-valid {
+            background: #28a745;
+        }
+        
+        .status-invalid {
+            background: #dc3545;
+        }
+        
+        .status-pending {
+            background: #ffc107;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .preview-section, .output-section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            min-width: 0; /* Prevent flex items from growing beyond container */
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .token-tree {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        
+        .token-group {
+            border-bottom: 1px solid #e1e5e9;
+        }
+        
+        .token-group:last-child {
+            border-bottom: none;
+        }
+        
+        .token-group-header {
+            padding: 12px 15px;
+            background: #f0f0f0;
+            font-weight: 600;
+            color: #555;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .token-group-header:hover {
+            background: #e9ecef;
+        }
+        
+        .group-toggle {
+            font-size: 0.8rem;
+            transition: transform 0.2s ease;
+        }
+        
+        .group-toggle.collapsed {
+            transform: rotate(-90deg);
+        }
+        
+        .token-list {
+            display: none;
+            padding: 10px 0;
+        }
+        
+        .token-list.expanded {
+            display: block;
+        }
+        
+        .token-item {
+            padding: 8px 15px;
+            border-left: 3px solid transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .token-item:hover {
+            background: white;
+            border-left-color: #667eea;
+        }
+        
+        .token-name {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .token-value {
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: #666;
+            background: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .color-token .token-value {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .color-swatch {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+        }
+        
+        .output-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .output-tab {
+            padding: 6px 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 6px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .output-tab.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        
+        .output-content {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            max-height: 400px;
+            min-height: 400px;
+            overflow-y: auto;
+            overflow-x: auto;
+            border: 1px solid #e1e5e9;
+            position: relative;
+            width: 100%;
+        }
+        
+        .output-content pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-width: 100%;
+        }
+        
+        .copy-output-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 6px 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .copy-output-btn:hover {
+            background: #5a6fd8;
+        }
+        
+        .export-all-btn {
+            width: 100%;
+            margin-top: 20px;
+            padding: 12px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .export-all-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+            font-style: italic;
+        }
+        
+        .examples-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .example-btn {
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        .example-btn:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            color: #667eea;
+        }
+        
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .input-tabs, .output-tabs {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .action-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            
+            .token-textarea {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <a href="auxilia.html" class="nav-brand">Auxilia</a>
+        <ul class="nav-links">
+            <li><a href="auxilia.html">Home</a></li>
+            <li><a href="oklch-converter.html">OKLCH Converter</a></li>
+            <li><a href="accessibility-checker.html">Accessibility Checker</a></li>
+            <li><a href="palette-generator.html">Palette Generator</a></li>
+            <li><a href="design-token-manager.html" class="active">Token Manager</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-container">
+        <div class="container manager-container">
+            <h1>Design Token Manager</h1>
+            <p class="description">
+                Convert, validate, and transform design tokens between multiple formats. 
+                Supports W3C DTCG standards and popular frameworks like Tailwind, iOS, Android.
+            </p>
+
+            <!-- Input Section -->
+            <div class="input-section">
+                <div class="input-tabs">
+                    <button class="input-tab active" data-tab="paste">Paste Tokens</button>
+                    <button class="input-tab" data-tab="upload">Upload File</button>
+                    <button class="input-tab" data-tab="examples">Examples</button>
+                </div>
+                
+                <div class="input-content active" data-content="paste">
+                    <label for="token-input">Paste your design tokens (JSON, CSS Variables, SCSS):</label>
+                    <textarea id="token-input" class="token-textarea" placeholder='Example JSON format:
+{
+  "color": {
+    "primary": {
+      "500": {
+        "value": "#667eea",
+        "type": "color"
+      }
+    }
+  },
+  "spacing": {
+    "small": {
+      "value": "8px",
+      "type": "dimension"
+    }
+  }
+}'></textarea>
+                </div>
+                
+                <div class="input-content" data-content="upload">
+                    <div class="file-upload" id="file-upload">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-text">Drop a file here or click to upload</div>
+                        <div class="upload-hint">Supports .json, .css, .scss files</div>
+                        <input type="file" class="file-input" id="file-input" accept=".json,.css,.scss,.txt">
+                    </div>
+                </div>
+                
+                <div class="input-content" data-content="examples">
+                    <div class="examples-list">
+                        <button class="example-btn" data-example="w3c">W3C DTCG Format</button>
+                        <button class="example-btn" data-example="css">CSS Variables</button>
+                        <button class="example-btn" data-example="scss">SCSS Variables</button>
+                        <button class="example-btn" data-example="figma">Figma Tokens</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Bar -->
+            <div class="action-bar">
+                <button id="parse-btn" class="parse-btn">Parse Tokens</button>
+                <div class="validation-status" id="validation-status">
+                    <span class="status-icon status-pending"></span>
+                    <span>Ready to parse</span>
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="content-grid">
+                <!-- Token Preview Section -->
+                <div class="preview-section">
+                    <h2 class="section-title">Token Preview</h2>
+                    <div id="token-tree" class="token-tree">
+                        <div class="empty-state">
+                            Parse tokens to see preview
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Output Section -->
+                <div class="output-section">
+                    <h2 class="section-title">Generated Formats</h2>
+                    
+                    <div class="output-tabs">
+                        <button class="output-tab active" data-format="css">CSS</button>
+                        <button class="output-tab" data-format="scss">SCSS</button>
+                        <button class="output-tab" data-format="js">JavaScript</button>
+                        <button class="output-tab" data-format="json">JSON</button>
+                        <button class="output-tab" data-format="tailwind">Tailwind</button>
+                        <button class="output-tab" data-format="ios">iOS</button>
+                        <button class="output-tab" data-format="android">Android</button>
+                    </div>
+                    
+                    <div class="output-content" id="output-content">
+                        <button class="copy-output-btn" onclick="copyOutput()">Copy</button>
+                        <pre id="output-code">Parse tokens to see output formats</pre>
+                    </div>
+                    
+                    <button class="export-all-btn" id="export-all-btn" onclick="exportAll()" disabled>
+                        Export All Formats
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        Made for Jenn<span class="heart">💜</span>by Geoff
+    </footer>
+
+    <script>
+        // Global state
+        let parsedTokens = {};
+        let currentFormat = 'css';
+        
+        // DOM elements
+        const tokenInput = document.getElementById('token-input');
+        const fileInput = document.getElementById('file-input');
+        const fileUpload = document.getElementById('file-upload');
+        const parseBtn = document.getElementById('parse-btn');
+        const validationStatus = document.getElementById('validation-status');
+        const tokenTree = document.getElementById('token-tree');
+        const outputContent = document.getElementById('output-content');
+        const outputCode = document.getElementById('output-code');
+        const exportAllBtn = document.getElementById('export-all-btn');
+        
+        // Example token sets
+        const examples = {
+            w3c: `{
+  "color": {
+    "primary": {
+      "100": { "value": "#e3f2fd", "type": "color" },
+      "500": { "value": "#2196f3", "type": "color" },
+      "900": { "value": "#0d47a1", "type": "color" }
+    },
+    "semantic": {
+      "success": { "value": "{color.primary.500}", "type": "color" }
+    }
+  },
+  "spacing": {
+    "small": { "value": "8px", "type": "dimension" },
+    "medium": { "value": "16px", "type": "dimension" },
+    "large": { "value": "24px", "type": "dimension" }
+  },
+  "typography": {
+    "body": {
+      "fontFamily": { "value": ["Inter", "sans-serif"], "type": "fontFamily" },
+      "fontSize": { "value": "16px", "type": "dimension" },
+      "fontWeight": { "value": "400", "type": "fontWeight" }
+    }
+  }
+}`,
+            css: `:root {
+  /* Colors */
+  --color-primary-100: #e3f2fd;
+  --color-primary-500: #2196f3;
+  --color-primary-900: #0d47a1;
+  
+  /* Spacing */
+  --spacing-small: 8px;
+  --spacing-medium: 16px;
+  --spacing-large: 24px;
+  
+  /* Typography */
+  --font-size-body: 16px;
+  --font-weight-normal: 400;
+}`,
+            scss: `// Colors
+$color-primary-100: #e3f2fd;
+$color-primary-500: #2196f3;
+$color-primary-900: #0d47a1;
+
+// Spacing
+$spacing-small: 8px;
+$spacing-medium: 16px;
+$spacing-large: 24px;
+
+// Typography
+$font-size-body: 16px;
+$font-weight-normal: 400;`,
+            figma: `{
+  "global": {
+    "color": {
+      "primary": {
+        "100": { "value": "#e3f2fd", "type": "color" },
+        "500": { "value": "#2196f3", "type": "color" },
+        "900": { "value": "#0d47a1", "type": "color" }
+      }
+    },
+    "spacing": {
+      "small": { "value": "8", "type": "spacing" },
+      "medium": { "value": "16", "type": "spacing" },
+      "large": { "value": "24", "type": "spacing" }
+    }
+  }
+}`
+        };
+        
+        // Token parsers
+        const parsers = {
+            // Parse W3C DTCG format JSON
+            parseJSON: (text) => {
+                try {
+                    const data = JSON.parse(text);
+                    return flattenTokens(data);
+                } catch (error) {
+                    throw new Error('Invalid JSON format');
+                }
+            },
+            
+            // Parse CSS variables
+            parseCSS: (text) => {
+                const tokens = {};
+                const cssVarRegex = /--([^:]+):\s*([^;]+);/g;
+                let match;
+                
+                while ((match = cssVarRegex.exec(text)) !== null) {
+                    const name = match[1].trim();
+                    const value = match[2].trim();
+                    
+                    tokens[name] = {
+                        value: value,
+                        type: inferTokenType(value),
+                        path: name.split('-')
+                    };
+                }
+                
+                return tokens;
+            },
+            
+            // Parse SCSS variables
+            parseSCSS: (text) => {
+                const tokens = {};
+                const scssVarRegex = /\$([^:]+):\s*([^;]+);/g;
+                let match;
+                
+                while ((match = scssVarRegex.exec(text)) !== null) {
+                    const name = match[1].trim();
+                    const value = match[2].trim();
+                    
+                    tokens[name] = {
+                        value: value,
+                        type: inferTokenType(value),
+                        path: name.split('-')
+                    };
+                }
+                
+                return tokens;
+            }
+        };
+        
+        // Flatten nested token structure
+        function flattenTokens(obj, path = [], result = {}) {
+            for (const [key, value] of Object.entries(obj)) {
+                const currentPath = [...path, key];
+                
+                if (value && typeof value === 'object' && value.hasOwnProperty('value')) {
+                    // This is a token
+                    result[currentPath.join('.')] = {
+                        ...value,
+                        path: currentPath
+                    };
+                } else if (value && typeof value === 'object') {
+                    // This is a group, recurse
+                    flattenTokens(value, currentPath, result);
+                }
+            }
+            return result;
+        }
+        
+        // Infer token type from value
+        function inferTokenType(value) {
+            value = value.toString().toLowerCase();
+            
+            if (value.match(/^#[0-9a-f]{3,8}$/i) || 
+                value.match(/^rgb/) || 
+                value.match(/^hsl/) ||
+                value.includes('color')) {
+                return 'color';
+            } else if (value.match(/\d+(px|rem|em|%)$/)) {
+                return 'dimension';
+            } else if (value.match(/^\d+$/)) {
+                return 'number';
+            } else if (value.includes('font') || value.includes('family')) {
+                return 'fontFamily';
+            }
+            
+            return 'string';
+        }
+        
+        // Output generators
+        const generators = {
+            css: (tokens) => {
+                let output = ':root {\n';
+                for (const [name, token] of Object.entries(tokens)) {
+                    const cssName = '--' + name.replace(/\./g, '-');
+                    output += `  ${cssName}: ${token.value};\n`;
+                }
+                output += '}';
+                return output;
+            },
+            
+            scss: (tokens) => {
+                let output = '// Design Tokens\n\n';
+                for (const [name, token] of Object.entries(tokens)) {
+                    const scssName = '$' + name.replace(/\./g, '-');
+                    output += `${scssName}: ${token.value};\n`;
+                }
+                return output;
+            },
+            
+            js: (tokens) => {
+                const jsObject = {};
+                for (const [name, token] of Object.entries(tokens)) {
+                    const jsName = name.replace(/\./g, '_');
+                    jsObject[jsName] = token.value;
+                }
+                return `export const tokens = ${JSON.stringify(jsObject, null, 2)};`;
+            },
+            
+            json: (tokens) => {
+                const jsonTokens = {};
+                for (const [name, token] of Object.entries(tokens)) {
+                    jsonTokens[name] = {
+                        value: token.value,
+                        type: token.type
+                    };
+                }
+                return JSON.stringify(jsonTokens, null, 2);
+            },
+            
+            tailwind: (tokens) => {
+                let output = '@import "tailwindcss";\n\n@theme {\n';
+                
+                for (const [name, token] of Object.entries(tokens)) {
+                    const parts = name.split('.');
+                    let themeVar = '';
+                    
+                    if (token.type === 'color') {
+                        // Convert to Tailwind v4 color variable format
+                        if (parts.length >= 2) {
+                            const colorName = parts[parts.length - 2];
+                            const shade = parts[parts.length - 1];
+                            themeVar = `--color-${colorName}-${shade}`;
+                        } else {
+                            const colorName = parts[parts.length - 1];
+                            themeVar = `--color-${colorName}`;
+                        }
+                    } else if (token.type === 'dimension') {
+                        const lowerName = name.toLowerCase();
+                        if (lowerName.includes('spacing') || lowerName.includes('space') || 
+                            lowerName.includes('margin') || lowerName.includes('padding')) {
+                            const spaceName = parts[parts.length - 1];
+                            themeVar = `--spacing-${spaceName}`;
+                        } else if (lowerName.includes('font') && lowerName.includes('size')) {
+                            const sizeName = parts[parts.length - 1];
+                            themeVar = `--font-size-${sizeName}`;
+                        } else {
+                            // Default to spacing for generic dimensions
+                            const dimName = parts[parts.length - 1];
+                            themeVar = `--spacing-${dimName}`;
+                        }
+                    } else if (token.type === 'fontFamily') {
+                        const fontName = parts[parts.length - 1];
+                        themeVar = `--font-family-${fontName}`;
+                    } else if (token.type === 'fontWeight') {
+                        const weightName = parts[parts.length - 1];
+                        themeVar = `--font-weight-${weightName}`;
+                    } else {
+                        // Generic fallback
+                        const tokenName = parts[parts.length - 1];
+                        themeVar = `--${tokenName}`;
+                    }
+                    
+                    if (themeVar) {
+                        // Clean up variable name (remove dots, convert to kebab-case)
+                        themeVar = themeVar.replace(/\./g, '-').toLowerCase();
+                        output += `  ${themeVar}: ${token.value};\n`;
+                    }
+                }
+                
+                output += '}';
+                
+                // Add usage example comment
+                output += '\n\n/* Usage examples:\n';
+                output += '   bg-primary-500     -> uses --color-primary-500\n';
+                output += '   p-small           -> uses --spacing-small\n';
+                output += '   text-body         -> uses --font-size-body\n';
+                output += '*/';
+                
+                return output;
+            },
+            
+            ios: (tokens) => {
+                let output = '// Design Tokens for iOS\n\nimport UIKit\n\nstruct DesignTokens {\n';
+                for (const [name, token] of Object.entries(tokens)) {
+                    const swiftName = name.replace(/\./g, '_').replace(/-/g, '_');
+                    if (token.type === 'color') {
+                        output += `    static let ${swiftName} = UIColor(hex: "${token.value}")\n`;
+                    } else {
+                        output += `    static let ${swiftName} = "${token.value}"\n`;
+                    }
+                }
+                output += '}';
+                return output;
+            },
+            
+            android: (tokens) => {
+                let colors = '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n';
+                let dimens = '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n';
+                let strings = '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n';
+                
+                let hasColors = false;
+                let hasDimens = false;
+                let hasStrings = false;
+                
+                for (const [name, token] of Object.entries(tokens)) {
+                    const androidName = name.replace(/\./g, '_').replace(/-/g, '_').toLowerCase();
+                    
+                    if (token.type === 'color') {
+                        // Ensure color value has # prefix for Android
+                        let colorValue = token.value;
+                        if (!colorValue.startsWith('#')) {
+                            colorValue = '#' + colorValue;
+                        }
+                        colors += `    <color name="${androidName}">${colorValue}</color>\n`;
+                        hasColors = true;
+                    } else if (token.type === 'dimension') {
+                        // Convert units if needed
+                        let dimenValue = token.value;
+                        if (dimenValue.includes('px')) {
+                            dimenValue = dimenValue; // Keep px as is
+                        } else if (dimenValue.includes('rem')) {
+                            // Convert rem to dp (rough conversion)
+                            const remValue = parseFloat(dimenValue);
+                            dimenValue = `${Math.round(remValue * 16)}dp`;
+                        } else if (/^\d+$/.test(dimenValue)) {
+                            // Add dp unit if it's just a number
+                            dimenValue = dimenValue + 'dp';
+                        }
+                        dimens += `    <dimen name="${androidName}">${dimenValue}</dimen>\n`;
+                        hasDimens = true;
+                    } else if (token.type === 'string' || token.type === 'fontFamily') {
+                        strings += `    <string name="${androidName}">${token.value}</string>\n`;
+                        hasStrings = true;
+                    } else {
+                        // Fallback: treat other types as strings
+                        strings += `    <string name="${androidName}">${token.value}</string>\n`;
+                        hasStrings = true;
+                    }
+                }
+                
+                colors += '</resources>';
+                dimens += '</resources>';
+                strings += '</resources>';
+                
+                let result = '';
+                if (hasColors) {
+                    result += `<!-- colors.xml -->\n${colors}`;
+                }
+                if (hasDimens) {
+                    if (result) result += '\n\n';
+                    result += `<!-- dimens.xml -->\n${dimens}`;
+                }
+                if (hasStrings) {
+                    if (result) result += '\n\n';
+                    result += `<!-- strings.xml -->\n${strings}`;
+                }
+                
+                return result || '<!-- No valid tokens found for Android conversion -->';
+            }
+        };
+        
+        // Event listeners setup
+        function setupEventListeners() {
+            // Input tabs
+            document.querySelectorAll('.input-tab').forEach(tab => {
+                tab.addEventListener('click', () => switchInputTab(tab.dataset.tab));
+            });
+            
+            // Output tabs  
+            document.querySelectorAll('.output-tab').forEach(tab => {
+                tab.addEventListener('click', () => switchOutputTab(tab.dataset.format));
+            });
+            
+            // Parse button
+            parseBtn.addEventListener('click', parseTokens);
+            
+            // File upload
+            fileUpload.addEventListener('click', () => fileInput.click());
+            fileUpload.addEventListener('dragover', handleDragOver);
+            fileUpload.addEventListener('dragleave', handleDragLeave);
+            fileUpload.addEventListener('drop', handleFileDrop);
+            fileInput.addEventListener('change', handleFileSelect);
+            
+            // Example buttons
+            document.querySelectorAll('.example-btn').forEach(btn => {
+                btn.addEventListener('click', () => loadExample(btn.dataset.example));
+            });
+        }
+        
+        // Switch input tab
+        function switchInputTab(tabName) {
+            // Update tabs
+            document.querySelectorAll('.input-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.tab === tabName);
+            });
+            
+            // Update content
+            document.querySelectorAll('.input-content').forEach(content => {
+                content.classList.toggle('active', content.dataset.content === tabName);
+            });
+        }
+        
+        // Switch output tab
+        function switchOutputTab(format) {
+            currentFormat = format;
+            
+            // Update tabs
+            document.querySelectorAll('.output-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.format === format);
+            });
+            
+            updateOutput();
+        }
+        
+        // Load example
+        function loadExample(exampleName) {
+            tokenInput.value = examples[exampleName];
+            switchInputTab('paste');
+            parseTokens();
+        }
+        
+        // Parse tokens
+        function parseTokens() {
+            const input = tokenInput.value.trim();
+            
+            if (!input) {
+                updateValidationStatus('invalid', 'No input provided');
+                return;
+            }
+            
+            try {
+                updateValidationStatus('pending', 'Parsing...');
+                
+                // Determine format and parse
+                let tokens;
+                if (input.startsWith('{')) {
+                    tokens = parsers.parseJSON(input);
+                } else if (input.includes('--')) {
+                    tokens = parsers.parseCSS(input);
+                } else if (input.includes('$')) {
+                    tokens = parsers.parseSCSS(input);
+                } else {
+                    throw new Error('Unrecognized format');
+                }
+                
+                parsedTokens = tokens;
+                updateValidationStatus('valid', `${Object.keys(tokens).length} tokens parsed`);
+                updateTokenTree();
+                updateOutput();
+                exportAllBtn.disabled = false;
+                
+            } catch (error) {
+                updateValidationStatus('invalid', `Error: ${error.message}`);
+                parsedTokens = {};
+                tokenTree.innerHTML = '<div class="empty-state">Failed to parse tokens</div>';
+                outputCode.textContent = 'Fix parsing errors to see output';
+                exportAllBtn.disabled = true;
+            }
+        }
+        
+        // Update validation status
+        function updateValidationStatus(status, message) {
+            const statusIcon = validationStatus.querySelector('.status-icon');
+            const statusText = validationStatus.querySelector('span:last-child');
+            
+            statusIcon.className = `status-icon status-${status}`;
+            statusText.textContent = message;
+        }
+        
+        // Update token tree
+        function updateTokenTree() {
+            const groups = {};
+            
+            // Group tokens by type
+            for (const [name, token] of Object.entries(parsedTokens)) {
+                const type = token.type || 'other';
+                if (!groups[type]) groups[type] = [];
+                groups[type].push({ name, ...token });
+            }
+            
+            let html = '';
+            for (const [type, tokens] of Object.entries(groups)) {
+                html += `
+                    <div class="token-group">
+                        <div class="token-group-header" onclick="toggleGroup('${type}')">
+                            <span class="group-toggle">▼</span>
+                            ${type.charAt(0).toUpperCase() + type.slice(1)} (${tokens.length})
+                        </div>
+                        <div class="token-list expanded" id="group-${type}">
+                `;
+                
+                tokens.forEach(token => {
+                    const colorClass = token.type === 'color' ? 'color-token' : '';
+                    html += `
+                        <div class="token-item ${colorClass}">
+                            <span class="token-name">${token.name}</span>
+                            <span class="token-value">
+                                ${token.type === 'color' ? `<span class="color-swatch" style="background-color: ${token.value}"></span>` : ''}
+                                ${token.value}
+                            </span>
+                        </div>
+                    `;
+                });
+                
+                html += '</div></div>';
+            }
+            
+            tokenTree.innerHTML = html;
+        }
+        
+        // Toggle token group
+        function toggleGroup(groupType) {
+            const group = document.getElementById(`group-${groupType}`);
+            const toggle = group.previousElementSibling.querySelector('.group-toggle');
+            
+            group.classList.toggle('expanded');
+            toggle.classList.toggle('collapsed');
+            
+            if (group.classList.contains('expanded')) {
+                group.style.display = 'block';
+            } else {
+                group.style.display = 'none';
+            }
+        }
+        
+        // Update output
+        function updateOutput() {
+            if (Object.keys(parsedTokens).length === 0) {
+                outputCode.textContent = 'Parse tokens to see output formats';
+                return;
+            }
+            
+            try {
+                const output = generators[currentFormat](parsedTokens);
+                outputCode.textContent = output;
+            } catch (error) {
+                outputCode.textContent = `Error generating ${currentFormat} output: ${error.message}`;
+            }
+        }
+        
+        // Copy output
+        function copyOutput() {
+            navigator.clipboard.writeText(outputCode.textContent).then(() => {
+                const btn = document.querySelector('.copy-output-btn');
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 1000);
+            });
+        }
+        
+        // Export all formats
+        function exportAll() {
+            const formats = ['css', 'scss', 'js', 'json', 'tailwind', 'ios', 'android'];
+            const files = {};
+            
+            formats.forEach(format => {
+                try {
+                    files[`tokens.${getFileExtension(format)}`] = generators[format](parsedTokens);
+                } catch (error) {
+                    console.error(`Error generating ${format}:`, error);
+                }
+            });
+            
+            // Create and download zip file (simplified - in real implementation would use JSZip)
+            const blob = new Blob([JSON.stringify(files, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'design-tokens-export.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        // Get file extension for format
+        function getFileExtension(format) {
+            const extensions = {
+                css: 'css',
+                scss: 'scss', 
+                js: 'js',
+                json: 'json',
+                tailwind: 'js',
+                ios: 'swift',
+                android: 'xml'
+            };
+            return extensions[format] || 'txt';
+        }
+        
+        // File handling
+        function handleDragOver(e) {
+            e.preventDefault();
+            fileUpload.classList.add('dragover');
+        }
+        
+        function handleDragLeave(e) {
+            e.preventDefault();
+            fileUpload.classList.remove('dragover');
+        }
+        
+        function handleFileDrop(e) {
+            e.preventDefault();
+            fileUpload.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                processFile(files[0]);
+            }
+        }
+        
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                processFile(files[0]);
+            }
+        }
+        
+        function processFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                tokenInput.value = e.target.result;
+                switchInputTab('paste');
+                parseTokens();
+            };
+            reader.readAsText(file);
+        }
+        
+        // Initialize
+        setupEventListeners();
+        
+        // Make functions globally accessible
+        window.toggleGroup = toggleGroup;
+        window.copyOutput = copyOutput;
+        window.exportAll = exportAll;
+    </script>
+</body>
+</html>
