@@ -3,46 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Design Token Manager - Auxilia</title>
+    <title>Design Token Converter - Auxilia</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        .manager-container {
-            max-width: 1400px;
-        }
-        
         .input-section {
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background: var(--aux-surface);
+            border: 1px solid var(--aux-border);
+            padding: var(--space-6);
+            margin-bottom: var(--space-8);
         }
         
         .input-tabs {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #e1e5e9;
-            padding-bottom: 15px;
+            gap: var(--space-3);
+            margin-bottom: var(--space-5);
+            border-bottom: 1px solid var(--aux-border);
+            padding-bottom: var(--space-4);
         }
         
         .input-tab {
-            padding: 8px 16px;
-            border: 2px solid transparent;
-            border-radius: 8px 8px 0 0;
-            background: #f8f9fa;
-            color: #666;
+            padding: var(--space-2) var(--space-4);
+            border: 1px solid transparent;
+            background: var(--aux-bg);
+            color: var(--aux-ink-2);
             cursor: pointer;
-            transition: all 0.2s ease;
-            font-weight: 500;
+            transition: all var(--aux-speed) var(--aux-ease);
+            font-weight: 700;
+            font-size: var(--fs-20);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
         }
         
         .input-tab.active {
-            background: white;
-            color: #667eea;
-            border-color: #e1e5e9;
-            border-bottom-color: white;
-            margin-bottom: -2px;
+            background: var(--aux-accent);
+            color: var(--aux-bg);
+            border-color: var(--aux-accent);
         }
         
         .input-content {
@@ -56,40 +51,37 @@
         .token-textarea {
             width: 100%;
             height: 300px;
-            padding: 20px;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
+            padding: var(--space-5);
+            border: 1px solid var(--aux-border);
             font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
+            font-size: var(--fs-20);
             resize: vertical;
-            background: #f8f9fa;
+            background: var(--aux-bg);
+            color: var(--aux-ink);
         }
         
         .token-textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            background: white;
+            outline: 2px solid var(--aux-accent);
+            outline-offset: 0;
         }
         
         .file-upload {
-            border: 2px dashed #e1e5e9;
-            border-radius: 12px;
-            padding: 40px;
+            border: 2px dashed var(--aux-border);
+            padding: var(--space-8);
             text-align: center;
-            background: #f8f9fa;
-            transition: all 0.2s ease;
+            background: var(--aux-surface);
+            transition: all var(--aux-speed) var(--aux-ease);
             cursor: pointer;
         }
         
         .file-upload:hover {
-            border-color: #667eea;
-            background: #f0f4ff;
+            border-color: var(--aux-accent);
+            transform: translateY(-1px);
         }
         
         .file-upload.dragover {
-            border-color: #667eea;
-            background: #f0f4ff;
-            transform: scale(1.02);
+            border-color: var(--aux-accent);
+            background: var(--aux-bg);
         }
         
         .file-input {
@@ -121,18 +113,21 @@
         }
         
         .parse-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
+            background: var(--aux-ink);
+            color: var(--aux-bg);
+            border: 1px solid var(--aux-ink);
+            padding: var(--space-3) var(--space-5);
             cursor: pointer;
-            transition: transform 0.2s ease;
+            font-family: var(--aux-font-sans);
+            font-weight: 700;
+            font-size: var(--fs-20);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            transition: all var(--aux-speed) var(--aux-ease);
         }
         
         .parse-btn:hover {
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
         
         .parse-btn:disabled {
@@ -169,22 +164,23 @@
         .content-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
+            gap: var(--space-8);
         }
         
         .preview-section, .output-section {
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            min-width: 0; /* Prevent flex items from growing beyond container */
+            background: var(--aux-surface);
+            border: 1px solid var(--aux-border);
+            padding: var(--space-6);
+            min-width: 0;
         }
         
         .section-title {
-            font-size: 1.3rem;
+            font-size: var(--fs-50);
             font-weight: 700;
-            margin-bottom: 20px;
-            color: #333;
+            margin-bottom: var(--space-5);
+            color: var(--aux-ink);
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
         }
         
         .token-tree {
@@ -280,27 +276,29 @@
         
         .output-tabs {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: var(--space-3);
+            margin-bottom: var(--space-5);
             flex-wrap: wrap;
         }
         
         .output-tab {
-            padding: 6px 12px;
-            border: 2px solid #e1e5e9;
-            border-radius: 6px;
-            background: white;
-            color: #333;
+            padding: var(--space-2) var(--space-3);
+            border: 1px solid var(--aux-border);
+            background: var(--aux-bg);
+            color: var(--aux-ink-2);
             cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 0.85rem;
-            font-weight: 500;
+            transition: all var(--aux-speed) var(--aux-ease);
+            font-size: var(--fs-20);
+            font-weight: 400;
+            font-family: var(--aux-font-sans);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
         }
         
         .output-tab.active {
-            border-color: #667eea;
-            background: #667eea;
-            color: white;
+            border-color: var(--aux-accent);
+            background: var(--aux-accent);
+            color: var(--aux-bg);
         }
         
         .output-content {
@@ -327,37 +325,43 @@
         
         .copy-output-btn {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 6px 12px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 4px;
+            top: var(--space-3);
+            right: var(--space-3);
+            padding: var(--space-2) var(--space-3);
+            background: var(--aux-ink);
+            color: var(--aux-bg);
+            border: 1px solid var(--aux-ink);
             cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 500;
+            font-size: var(--fs-10);
+            font-weight: 700;
+            font-family: var(--aux-font-sans);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            transition: all var(--aux-speed) var(--aux-ease);
         }
         
         .copy-output-btn:hover {
-            background: #5a6fd8;
+            transform: translateY(-1px);
         }
         
         .export-all-btn {
             width: 100%;
-            margin-top: 20px;
-            padding: 12px;
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
+            margin-top: var(--space-5);
+            padding: var(--space-3) var(--space-5);
+            background: var(--aux-ink);
+            color: var(--aux-bg);
+            border: 1px solid var(--aux-ink);
             cursor: pointer;
-            transition: transform 0.2s ease;
+            font-family: var(--aux-font-sans);
+            font-weight: 700;
+            font-size: var(--fs-20);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            transition: all var(--aux-speed) var(--aux-ease);
         }
         
         .export-all-btn:hover {
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
         
         .empty-state {
@@ -374,21 +378,26 @@
         }
         
         .example-btn {
-            padding: 15px;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
-            background: white;
-            color: #333;
+            padding: var(--space-4);
+            border: 1px solid var(--aux-border);
+            background: var(--aux-bg);
+            color: var(--aux-ink);
             cursor: pointer;
-            transition: all 0.2s ease;
+            font-family: var(--aux-font-sans);
+            font-weight: 700;
+            font-size: var(--fs-20);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            transition: all var(--aux-speed) var(--aux-ease);
             font-weight: 500;
             text-align: center;
         }
         
         .example-btn:hover {
-            border-color: #667eea;
-            background: #f0f4ff;
-            color: #667eea;
+            border-color: var(--aux-accent);
+            background: var(--aux-accent);
+            color: var(--aux-bg);
+            transform: translateY(-1px);
         }
         
         @media (max-width: 1024px) {
@@ -423,17 +432,18 @@
             <li><a href="oklch-converter.html">OKLCH Converter</a></li>
             <li><a href="accessibility-checker.html">Accessibility Checker</a></li>
             <li><a href="palette-generator.html">Palette Generator</a></li>
-            <li><a href="design-token-manager.html" class="active">Token Manager</a></li>
+            <li><a href="design-token-manager.html" class="active">Token Converter</a></li>
         </ul>
     </nav>
 
     <div class="main-container">
-        <div class="container manager-container">
-            <h1>Design Token Manager</h1>
+        <div class="page-header">
+            <h1>Design Token Converter</h1>
             <p class="description">
-                Convert, validate, and transform design tokens between multiple formats. 
+                Convert and transform design tokens between multiple formats. 
                 Supports W3C DTCG standards and popular frameworks like Tailwind, iOS, Android.
             </p>
+        </div>
 
             <!-- Input Section -->
             <div class="input-section">
