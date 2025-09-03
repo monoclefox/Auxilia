@@ -7,51 +7,15 @@
     <script src="https://cdn.jsdelivr.net/npm/culori@4/bundled/culori.umd.js"></script>
     <link rel="stylesheet" href="styles.css">
     <style>
-        .output-group {
-            margin-top: 30px;
-        }
-
         .hex-output {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: var(--space-4);
         }
 
         .hex-value {
             flex: 1;
-            padding: 12px;
-            background: #f8f9fa;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .hex-value:focus {
-            outline: none;
-            border-color: #667eea;
-            background: #fff;
-        }
-
-        .copy-button {
-            padding: 12px 20px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background-color 0.2s ease;
-        }
-
-        .copy-button:hover {
-            background: #5a6fd8;
-        }
-
-        .copy-button:active {
-            background: #4c63d2;
+            font-family: 'Courier New', monospace;
         }
     </style>
 </head>
@@ -63,17 +27,18 @@
             <li><a href="oklch-converter.html" class="active">OKLCH Converter</a></li>
             <li><a href="accessibility-checker.html">Accessibility Checker</a></li>
             <li><a href="palette-generator.html">Palette Generator</a></li>
-            <li><a href="design-token-manager.html">Token Manager</a></li>
+            <li><a href="design-token-manager.html">Token Converter</a></li>
         </ul>
     </nav>
 
     <div class="main-container">
-        <div class="container">
-        <h1>OKLCH ↔ Hex Converter</h1>
-        <p class="description">
-            Convert between OKLCH and hexadecimal color formats. 
-            Adjust the OKLCH values or enter a hex code to see real-time conversion in both directions.
-        </p>
+        <div class="page-header">
+            <h1>OKLCH ↔ Hex Converter</h1>
+            <p class="description">
+                Convert between OKLCH and hexadecimal color formats. 
+                Adjust the OKLCH values or enter a hex code to see real-time conversion in both directions.
+            </p>
+        </div>
 
         <div class="input-group">
             <label for="lightness">Lightness (L)</label>
@@ -107,14 +72,12 @@
 
         <div class="color-preview" id="color-preview"></div>
 
-        <div class="output-group">
+        <div class="input-group">
             <label for="hex-input">Hex Value</label>
             <div class="hex-output">
                 <input type="text" class="hex-value" id="hex-input" value="#b8a9db" placeholder="#ffffff">
                 <button class="copy-button" onclick="copyHex()">Copy</button>
             </div>
-        </div>
-
         </div>
     </div>
 

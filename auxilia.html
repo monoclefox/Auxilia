@@ -6,87 +6,68 @@
     <title>Auxilia - Color Tools for Designers</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        .hero {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-        
-        .hero h1 {
-            font-size: 3rem;
-            color: white;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-            margin-bottom: 20px;
-        }
-        
-        .hero .subtitle {
-            font-size: 1.2rem;
-            color: rgba(255, 255, 255, 0.9);
-            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-            margin-bottom: 30px;
-        }
-        
         .tools-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: var(--space-6);
+            margin-top: var(--space-8);
         }
         
         .tool-card {
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            background: var(--aux-surface);
+            border: 1px solid var(--aux-border);
+            padding: var(--space-6);
+            transition: all var(--aux-speed) var(--aux-ease);
             text-decoration: none;
             color: inherit;
+            display: flex;
+            flex-direction: column;
         }
         
         .tool-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            transform: translateY(-1px);
+            border-color: var(--aux-accent);
         }
         
-        .tool-icon {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            display: block;
+        .tool-meta {
+            font-size: var(--fs-10);
+            color: var(--aux-ink-3);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: var(--space-3);
         }
         
         .tool-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #333;
+            font-size: var(--fs-50);
+            font-weight: 700;
+            margin-bottom: var(--space-3);
+            color: var(--aux-ink);
+            line-height: var(--aux-lh-tight);
         }
         
         .tool-description {
-            color: #666;
-            line-height: 1.5;
-            font-size: 0.95rem;
+            color: var(--aux-ink-2);
+            line-height: var(--aux-lh-normal);
+            font-size: var(--fs-30);
+            margin-bottom: var(--space-4);
+            flex-grow: 1;
         }
         
         .status-badge {
             display: inline-block;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            margin-top: 15px;
+            font-size: var(--fs-10);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            align-self: flex-start;
         }
         
         .status-live {
-            background: #d4edda;
-            color: #155724;
+            color: var(--aux-accent);
         }
         
         .status-coming-soon {
-            background: #fff3cd;
-            color: #856404;
-        }
-        
-        .main-container {
-            max-width: 1000px;
+            color: var(--aux-ink-3);
         }
     </style>
 </head>
@@ -98,19 +79,19 @@
             <li><a href="oklch-converter.html">OKLCH Converter</a></li>
             <li><a href="accessibility-checker.html">Accessibility Checker</a></li>
             <li><a href="palette-generator.html">Palette Generator</a></li>
-            <li><a href="design-token-manager.html">Token Manager</a></li>
+            <li><a href="design-token-manager.html">Token Converter</a></li>
         </ul>
     </nav>
 
     <div class="main-container">
-        <div class="hero">
+        <div class="page-header">
             <h1>Auxilia</h1>
-            <p class="subtitle">Color tools for designers building accessible, beautiful products</p>
+            <p class="description">Professional color tools for designers building accessible, beautiful products</p>
         </div>
 
         <div class="tools-grid">
             <a href="oklch-converter.html" class="tool-card">
-                <span class="tool-icon">🎨</span>
+                <span class="tool-meta">01 / Converter</span>
                 <h3 class="tool-title">OKLCH ↔ Hex Converter</h3>
                 <p class="tool-description">
                     Convert between OKLCH and hexadecimal color formats with real-time bidirectional conversion. 
@@ -120,7 +101,7 @@
             </a>
 
             <a href="accessibility-checker.html" class="tool-card">
-                <span class="tool-icon">♿</span>
+                <span class="tool-meta">02 / Accessibility</span>
                 <h3 class="tool-title">Accessibility Checker</h3>
                 <p class="tool-description">
                     Check WCAG contrast ratios and simulate color blindness. 
@@ -130,7 +111,7 @@
             </a>
 
             <a href="palette-generator.html" class="tool-card">
-                <span class="tool-icon">🎯</span>
+                <span class="tool-meta">03 / Palette</span>
                 <h3 class="tool-title">Palette Generator</h3>
                 <p class="tool-description">
                     Generate harmonious color palettes with mathematical precision. 
@@ -140,10 +121,10 @@
             </a>
 
             <a href="design-token-manager.html" class="tool-card">
-                <span class="tool-icon">📏</span>
-                <h3 class="tool-title">Design Token Manager</h3>
+                <span class="tool-meta">04 / Converter</span>
+                <h3 class="tool-title">Design Token Converter</h3>
                 <p class="tool-description">
-                    Convert and manage design tokens across different formats. 
+                    Convert design tokens between multiple formats. 
                     Perfect for multi-platform design systems.
                 </p>
                 <span class="status-badge status-live">Live</span>
