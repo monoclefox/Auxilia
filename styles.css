@@ -1,7 +1,7 @@
 /* Auxilia - Swiss Design System */
 /* International Typographic Style Implementation */
 
-@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
   /* Color */
@@ -14,7 +14,7 @@
   --aux-border: #e6e6e6;
 
   /* Typography */
-  --aux-font-sans: "Atkinson Hyperlegible", system-ui, Arial, sans-serif;
+  --aux-font-sans: "Inter", system-ui, Arial, sans-serif;
   --aux-lh-tight: 1.15;
   --aux-lh-normal: 1.45;
 
@@ -105,7 +105,7 @@ a:hover {
     color: var(--aux-ink);
     text-decoration: none;
     text-transform: uppercase;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
 }
 
 .nav-brand:hover {
@@ -124,7 +124,7 @@ a:hover {
     font-size: var(--fs-20);
     font-weight: 400;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.025em;
     transition: color var(--aux-speed) var(--aux-ease);
     position: relative;
 }
@@ -194,7 +194,7 @@ label {
     color: var(--aux-ink);
     font-size: var(--fs-20);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.025em;
 }
 
 .input-with-range {
@@ -244,7 +244,7 @@ button {
     font-weight: 700;
     font-size: var(--fs-20);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.025em;
     transition: all var(--aux-speed) var(--aux-ease);
 }
 
@@ -282,7 +282,7 @@ button:active {
     color: var(--aux-ink-3);
     margin-top: var(--space-1);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.025em;
 }
 
 /* Footer */
