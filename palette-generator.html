@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Palette Generator - Auxilia</title>
+    <script src="https://cdn.jsdelivr.net/npm/culori@4/bundled/culori.umd.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .generator-container {
+            max-width: 1200px;
+        }
+        
+        .controls-section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .control-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 25px;
+            align-items: end;
+        }
+        
+        .harmony-select {
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: white;
+        }
+        
+        .harmony-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .generate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .generate-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .palettes-grid {
+            display: grid;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .palette-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .palette-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .copy-palette-btn {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .color-harmony-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .color-swatch {
+            flex: 1;
+            height: 80px;
+            border-radius: 8px;
+            display: flex;
+            align-items: end;
+            justify-content: center;
+            padding: 8px;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .color-swatch:hover {
+            transform: scale(1.05);
+        }
+        
+        .color-ramp {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 4px;
+            margin-top: 15px;
+        }
+        
+        .ramp-swatch {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .ramp-swatch:hover {
+            transform: scale(1.1);
+        }
+        
+        .ramp-label {
+            font-size: 0.7rem;
+            text-align: center;
+            margin-top: 4px;
+            color: #666;
+        }
+        
+        .export-section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .export-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .export-tab {
+            padding: 8px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .export-tab.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        
+        .export-content {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e1e5e9;
+        }
+        
+        
+        @media (max-width: 768px) {
+            .control-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .color-harmony-row {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .color-swatch {
+                height: 60px;
+            }
+            
+            .color-ramp {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <a href="auxilia.html" class="nav-brand">Auxilia</a>
+        <ul class="nav-links">
+            <li><a href="auxilia.html">Home</a></li>
+            <li><a href="oklch-converter.html">OKLCH Converter</a></li>
+            <li><a href="accessibility-checker.html">Accessibility Checker</a></li>
+            <li><a href="palette-generator.html" class="active">Palette Generator</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-container">
+        <div class="container generator-container">
+            <h1>Palette Generator</h1>
+            <p class="description">
+                Generate harmonious color palettes and accessible color ramps for your design system.
+            </p>
+
+            <!-- Controls Section -->
+            <div class="controls-section">
+                <div class="control-grid">
+                    <div class="input-group">
+                        <label for="base-color">Base Color</label>
+                        <input type="text" id="base-color" value="#667eea" placeholder="#667eea">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="harmony-type">Harmony Type</label>
+                        <select id="harmony-type" class="harmony-select">
+                            <option value="monochromatic">Monochromatic</option>
+                            <option value="complementary">Complementary</option>
+                            <option value="triadic">Triadic</option>
+                            <option value="tetradic">Tetradic</option>
+                            <option value="analogous">Analogous</option>
+                            <option value="split-complementary">Split Complementary</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <button id="generate-btn" class="generate-btn">Generate Palette</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generated Palettes -->
+            <div class="palettes-grid" id="palettes-container">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+
+            <!-- Export Section -->
+            <div class="export-section">
+                <h2 class="section-title">Export Palette</h2>
+                
+                <div class="export-tabs">
+                    <button class="export-tab active" data-format="css">CSS Variables</button>
+                    <button class="export-tab" data-format="json">JSON</button>
+                    <button class="export-tab" data-format="tailwind">Tailwind</button>
+                    <button class="export-tab" data-format="figma">Figma Tokens</button>
+                </div>
+                
+                <div class="export-content" id="export-content">
+                    <pre id="export-code">/* Generate a palette to see export options */</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        Made for Jenn<span class="heart">💜</span>by Geoff
+    </footer>
+
+    <script>
+        // Global palette data
+        let currentPalette = [];
+        
+        // DOM elements
+        const baseColorInput = document.getElementById('base-color');
+        const harmonySelect = document.getElementById('harmony-type');
+        const generateBtn = document.getElementById('generate-btn');
+        const palettesContainer = document.getElementById('palettes-container');
+        const exportTabs = document.querySelectorAll('.export-tab');
+        const exportContent = document.getElementById('export-content');
+        const exportCode = document.getElementById('export-code');
+        
+        // Color harmony algorithms
+        const harmonyAlgorithms = {
+            monochromatic: (baseColor) => {
+                const oklch = culori.oklch(baseColor);
+                return [
+                    { ...oklch, l: Math.max(0.1, oklch.l - 0.3) },
+                    { ...oklch, l: Math.max(0.1, oklch.l - 0.15) },
+                    oklch,
+                    { ...oklch, l: Math.min(0.95, oklch.l + 0.15) },
+                    { ...oklch, l: Math.min(0.95, oklch.l + 0.3) }
+                ];
+            },
+            
+            complementary: (baseColor) => {
+                const oklch = culori.oklch(baseColor);
+                return [
+                    oklch,
+                    { ...oklch, h: (oklch.h + 180) % 360 }
+                ];
+            },
+            
+            triadic: (baseColor) => {
+                const oklch = culori.oklch(baseColor);
+                return [
+                    oklch,
+                    { ...oklch, h: (oklch.h + 120) % 360 },
+                    { ...oklch, h: (oklch.h + 240) % 360 }
+                ];
+            },
+            
+            tetradic: (baseColor) => {
+                const oklch = culori.oklch(baseColor);
+                return [
+                    oklch,
+                    { ...oklch, h: (oklch.h + 90) % 360 },
+                    { ...oklch, h: (oklch.h + 180) % 360 },
+                    { ...oklch, h: (oklch.h + 270) % 360 }
+                ];
+            },
+            
+            analogous: (baseColor) => {
+                const oklch = culori.oklch(baseColor);
+                return [
+                    { ...oklch, h: (oklch.h - 30 + 360) % 360 },
+                    { ...oklch, h: (oklch.h - 15 + 360) % 360 },
+                    oklch,
+                    { ...oklch, h: (oklch.h + 15) % 360 },
+                    { ...oklch, h: (oklch.h + 30) % 360 }
+                ];
+            },
+            
+            'split-complementary': (baseColor) => {
+                const oklch = culori.oklch(baseColor);
+                return [
+                    oklch,
+                    { ...oklch, h: (oklch.h + 150) % 360 },
+                    { ...oklch, h: (oklch.h + 210) % 360 }
+                ];
+            }
+        };
+        
+        // Generate color ramp from base color
+        function generateColorRamp(baseColor) {
+            const oklch = culori.oklch(baseColor);
+            const steps = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
+            
+            return steps.map(step => {
+                const lightness = 1 - (step - 50) / 900; // Scale from ~0.95 to ~0.05
+                const adjustedLightness = Math.max(0.05, Math.min(0.95, lightness));
+                
+                // Adjust chroma for very light and very dark colors
+                let adjustedChroma = oklch.c;
+                if (adjustedLightness > 0.8) {
+                    adjustedChroma *= (0.8 / adjustedLightness) * 0.7;
+                } else if (adjustedLightness < 0.2) {
+                    adjustedChroma *= (adjustedLightness / 0.2) * 0.8;
+                }
+                
+                return {
+                    step,
+                    color: { ...oklch, l: adjustedLightness, c: adjustedChroma },
+                    hex: culori.formatHex({ ...oklch, l: adjustedLightness, c: adjustedChroma })
+                };
+            });
+        }
+        
+        // Generate palette
+        function generatePalette() {
+            const baseColor = baseColorInput.value.trim();
+            const harmonyType = harmonySelect.value;
+            
+            // Validate color by trying to parse it
+            try {
+                const testColor = culori.oklch(baseColor);
+                if (!testColor || typeof testColor.l !== 'number') {
+                    throw new Error('Invalid color');
+                }
+            } catch (error) {
+                alert('Please enter a valid color (hex, hsl, etc.)');
+                return;
+            }
+            
+            const harmonyColors = harmonyAlgorithms[harmonyType](baseColor);
+            currentPalette = harmonyColors.map(color => ({
+                hex: culori.formatHex(color),
+                oklch: color,
+                ramp: generateColorRamp(culori.formatHex(color))
+            }));
+            
+            renderPalettes();
+            updateExport();
+        }
+        
+        // Render palettes
+        function renderPalettes() {
+            const harmonyType = harmonySelect.value;
+            const typeNames = {
+                'monochromatic': 'Monochromatic Variations',
+                'complementary': 'Complementary Colors', 
+                'triadic': 'Triadic Harmony',
+                'tetradic': 'Tetradic (Square)',
+                'analogous': 'Analogous Colors',
+                'split-complementary': 'Split Complementary'
+            };
+            
+            let html = `
+                <div class="palette-card">
+                    <div class="palette-title">
+                        ${typeNames[harmonyType]}
+                        <button class="copy-palette-btn" onclick="copyPalette('harmony')">Copy Colors</button>
+                    </div>
+                    <div class="color-harmony-row">
+            `;
+            
+            currentPalette.forEach((colorData, index) => {
+                html += `
+                    <div class="color-swatch" 
+                         style="background-color: ${colorData.hex}"
+                         onclick="copyToClipboard('${colorData.hex}')"
+                         title="Click to copy ${colorData.hex}">
+                        ${colorData.hex}
+                    </div>
+                `;
+            });
+            
+            html += `</div>`;
+            
+            html += `</div>`;
+            
+            // Add color ramps for each harmony color
+            currentPalette.forEach((colorData, index) => {
+                html += `
+                    <div class="palette-card">
+                        <div class="palette-title">
+                            Color Ramp ${index + 1}
+                            <button class="copy-palette-btn" onclick="copyPalette('ramp-${index}')">Copy Ramp</button>
+                        </div>
+                        <div class="color-ramp">
+                `;
+                
+                colorData.ramp.forEach(rampColor => {
+                    const textColor = rampColor.color.l > 0.5 ? '#000' : '#fff';
+                    html += `
+                        <div>
+                            <div class="ramp-swatch" 
+                                 style="background-color: ${rampColor.hex}; color: ${textColor}"
+                                 onclick="copyToClipboard('${rampColor.hex}')"
+                                 title="Click to copy ${rampColor.hex}">
+                                ${rampColor.step}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+            
+            palettesContainer.innerHTML = html;
+        }
+        
+        // Export functions
+        const exportFormats = {
+            css: () => {
+                let css = ':root {\n';
+                currentPalette.forEach((colorData, colorIndex) => {
+                    colorData.ramp.forEach(rampColor => {
+                        css += `  --color-${colorIndex + 1}-${rampColor.step}: ${rampColor.hex};\n`;
+                    });
+                });
+                css += '}';
+                return css;
+            },
+            
+            json: () => {
+                const tokens = {};
+                currentPalette.forEach((colorData, colorIndex) => {
+                    tokens[`color-${colorIndex + 1}`] = {};
+                    colorData.ramp.forEach(rampColor => {
+                        tokens[`color-${colorIndex + 1}`][rampColor.step] = {
+                            value: rampColor.hex,
+                            type: 'color'
+                        };
+                    });
+                });
+                return JSON.stringify(tokens, null, 2);
+            },
+            
+            tailwind: () => {
+                let config = 'module.exports = {\n  theme: {\n    colors: {\n';
+                currentPalette.forEach((colorData, colorIndex) => {
+                    config += `      'custom-${colorIndex + 1}': {\n`;
+                    colorData.ramp.forEach(rampColor => {
+                        config += `        ${rampColor.step}: '${rampColor.hex}',\n`;
+                    });
+                    config += '      },\n';
+                });
+                config += '    }\n  }\n}';
+                return config;
+            },
+            
+            figma: () => {
+                const figmaTokens = {};
+                currentPalette.forEach((colorData, colorIndex) => {
+                    colorData.ramp.forEach(rampColor => {
+                        figmaTokens[`color-${colorIndex + 1}-${rampColor.step}`] = {
+                            value: rampColor.hex,
+                            type: 'color',
+                            description: `Color ${colorIndex + 1} - Step ${rampColor.step}`
+                        };
+                    });
+                });
+                return JSON.stringify(figmaTokens, null, 2);
+            }
+        };
+        
+        // Update export content
+        function updateExport() {
+            const activeTab = document.querySelector('.export-tab.active');
+            if (activeTab && currentPalette.length > 0) {
+                const format = activeTab.dataset.format;
+                exportCode.textContent = exportFormats[format]();
+            }
+        }
+        
+        // Copy functions
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Simple feedback - could enhance with toast notification
+                console.log(`Copied: ${text}`);
+            });
+        }
+        
+        function copyPalette(type) {
+            let textToCopy = '';
+            
+            if (type === 'harmony') {
+                textToCopy = currentPalette.map(c => c.hex).join(', ');
+            } else if (type.startsWith('ramp-')) {
+                const index = parseInt(type.split('-')[1]);
+                textToCopy = currentPalette[index].ramp.map(r => r.hex).join(', ');
+            }
+            
+            copyToClipboard(textToCopy);
+        }
+        
+        // Event listeners
+        generateBtn.addEventListener('click', generatePalette);
+        baseColorInput.addEventListener('change', generatePalette);
+        harmonySelect.addEventListener('change', generatePalette);
+        
+        // Export tab switching
+        exportTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                exportTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                updateExport();
+            });
+        });
+        
+        // Copy export content
+        exportContent.addEventListener('click', () => {
+            copyToClipboard(exportCode.textContent);
+        });
+        
+        // Initial generation
+        generatePalette();
+    </script>
+</body>
+</html>
