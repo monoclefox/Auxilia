@@ -144,7 +144,13 @@
         }
 
         function convertFromHex() {
-            const hexValue = hexInput.value.trim();
+            let hexValue = hexInput.value.trim();
+            
+            // Auto-handle # prefix
+            if (hexValue && !hexValue.startsWith('#')) {
+                hexValue = '#' + hexValue;
+                hexInput.value = hexValue; // Update input field to show the #
+            }
             
             // Validate hex format
             if (!/^#[0-9A-Fa-f]{6}$|^#[0-9A-Fa-f]{3}$/.test(hexValue)) {
