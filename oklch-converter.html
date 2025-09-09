@@ -167,18 +167,22 @@
                     const c = Math.max(0, Math.min(0.4, oklchColor.c || 0));
                     const h = isNaN(oklchColor.h) ? 0 : (oklchColor.h || 0) % 360;
 
-                    // Update inputs
-                    lightnessInput.value = l;
-                    lightnessRange.value = l;
-                    lightnessValue.textContent = l.toFixed(3);
+                    // Update inputs with proper rounding
+                    const roundedL = Math.round(l * 1000) / 1000; // Round to 3 decimals
+                    const roundedC = Math.round(c * 1000) / 1000; // Round to 3 decimals  
+                    const roundedH = Math.round(h * 10) / 10;     // Round to 1 decimal
 
-                    chromaInput.value = c;
-                    chromaRange.value = c;
-                    chromaValue.textContent = c.toFixed(3);
+                    lightnessInput.value = roundedL;
+                    lightnessRange.value = roundedL;
+                    lightnessValue.textContent = roundedL.toFixed(3);
 
-                    hueInput.value = h;
-                    hueRange.value = h;
-                    hueValue.textContent = h.toFixed(1);
+                    chromaInput.value = roundedC;
+                    chromaRange.value = roundedC;
+                    chromaValue.textContent = roundedC.toFixed(3);
+
+                    hueInput.value = roundedH;
+                    hueRange.value = roundedH;
+                    hueValue.textContent = roundedH.toFixed(1);
 
                     // Update color preview
                     colorPreview.style.backgroundColor = hexValue;
