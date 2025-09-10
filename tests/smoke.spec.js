@@ -55,6 +55,92 @@ test.describe('Auxilia Color Tools - Smoke Tests', () => {
     expect(nonClipboardErrors).toHaveLength(0);
   });
 
+  test('OKLCH Converter color history functionality', async ({ page }) => {
+    await page.goto('/tools/oklch-converter.html');
+    await page.waitForLoadState('networkidle');
+    
+    // Clear any existing localStorage
+    await page.evaluate(() => {
+      localStorage.removeItem('oklch-color-history');
+    });
+    
+    // Reload to ensure clean state
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(500); // Extra wait for JavaScript initialization
+    
+    // Check that history section exists
+    await expect(page.locator('.history-section')).toBeVisible();
+    
+    // Initially should show empty history
+    const historyList = page.locator('#history-list');
+    await expect(historyList).toBeVisible();
+    
+    // Check for empty state (might be shown as text content)
+    const emptyState = page.locator('.history-empty');
+    if (await emptyState.count() > 0) {
+      await expect(emptyState).toContainText('No colors saved yet');
+    }
+    
+    // Test 1: Add color via hex input
+    const hexInput = page.locator('#hex-input');
+    await hexInput.fill('ff0000');
+    await page.waitForTimeout(200); // Wait for history to update
+    
+    // Should now show history item with red color
+    const redHistoryItem = page.locator('.history-item').filter({ hasText: '#ff0000' });
+    await expect(redHistoryItem).toBeVisible();
+    
+    // Test 2: Add second color
+    await hexInput.fill('00ff00');
+    await page.waitForTimeout(200);
+    
+    // Should show history items (may be more than 1 due to default color)
+    const historyItems = page.locator('.history-item');
+    const itemCount = await historyItems.count();
+    expect(itemCount).toBeGreaterThan(1);
+    
+    // Most recent should be first (green)
+    const greenHistoryItem = page.locator('.history-item').filter({ hasText: '#00ff00' });
+    await expect(greenHistoryItem).toBeVisible();
+    
+    // Test 3: Click history item to apply color
+    await redHistoryItem.click(); // Click red color specifically
+    await page.waitForTimeout(100);
+    
+    // Should load red color back into converter
+    await expect(hexInput).toHaveValue('#ff0000');
+    
+    // Test 4: Test copy button adds to history
+    await hexInput.fill('0000ff'); // Blue
+    await page.click('.copy-button');
+    await page.waitForTimeout(200);
+    
+    // Should now have blue in history
+    const blueHistoryItem = page.locator('.history-item').filter({ hasText: '#0000ff' });
+    await expect(blueHistoryItem).toBeVisible();
+    
+    // Test 5: Test clear history
+    await page.click('#clear-history');
+    await page.waitForTimeout(100);
+    
+    // Should show empty state again
+    await expect(page.locator('.history-empty')).toBeVisible();
+    await expect(page.locator('.history-item')).toHaveCount(0);
+    
+    // Test 6: Test localStorage persistence
+    await hexInput.fill('ff00ff'); // Magenta
+    await page.waitForTimeout(200);
+    
+    // Reload page and check history persists
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+    
+    // Check that magenta color persists in history
+    const magentaHistoryItem = page.locator('.history-item').filter({ hasText: '#ff00ff' });
+    await expect(magentaHistoryItem).toBeVisible();
+  });
+
   test('Accessibility Checker functionality', async ({ page }) => {
     await page.goto('/tools/accessibility-checker.html');
     await page.waitForLoadState('networkidle');

@@ -17,6 +17,117 @@
             flex: 1;
             font-family: 'Courier New', monospace;
         }
+
+        /* Color History Styles */
+        .history-section {
+            margin-top: var(--space-8);
+            background: var(--aux-surface);
+            border: 1px solid var(--aux-border);
+            padding: var(--space-6);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-5);
+        }
+
+        .history-title {
+            font-size: var(--fs-50);
+            font-weight: 700;
+            color: var(--aux-ink);
+            text-transform: uppercase;
+            letter-spacing: 0.015em;
+        }
+
+        .clear-history-button {
+            padding: var(--space-2) var(--space-3);
+            background: var(--aux-bg);
+            color: var(--aux-ink-2);
+            border: 1px solid var(--aux-border);
+            cursor: pointer;
+            font-family: var(--aux-font-sans);
+            font-weight: 400;
+            font-size: var(--fs-20);
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            transition: all var(--aux-speed) var(--aux-ease);
+        }
+
+        .clear-history-button:hover {
+            border-color: var(--aux-accent);
+            color: var(--aux-accent);
+            transform: translateY(-1px);
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+
+        .history-empty {
+            text-align: center;
+            color: var(--aux-ink-3);
+            font-style: italic;
+            padding: var(--space-6) var(--space-4);
+        }
+
+        .history-item {
+            display: grid;
+            grid-template-columns: 32px 120px 1fr auto;
+            gap: var(--space-4);
+            align-items: center;
+            padding: var(--space-4);
+            border: 1px solid var(--aux-border);
+            background: var(--aux-bg);
+            cursor: pointer;
+            transition: all var(--aux-speed) var(--aux-ease);
+        }
+
+        .history-item:hover {
+            border-color: var(--aux-accent);
+            transform: translateY(-1px);
+        }
+
+        .history-swatch {
+            width: 24px;
+            height: 24px;
+            border: 1px solid var(--aux-border);
+            border-radius: 2px;
+        }
+
+        .history-hex {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: var(--aux-ink);
+            font-size: var(--fs-20);
+        }
+
+        .history-oklch {
+            font-family: 'Courier New', monospace;
+            color: var(--aux-ink-2);
+            font-size: var(--fs-20);
+        }
+
+        .history-time {
+            color: var(--aux-ink-3);
+            font-size: var(--fs-10);
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        @media (max-width: 768px) {
+            .history-item {
+                grid-template-columns: 24px 100px 1fr;
+                gap: var(--space-3);
+            }
+            
+            .history-time {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -77,6 +188,19 @@
             <div class="hex-output">
                 <input type="text" class="hex-value" id="hex-input" value="#b8a9db" placeholder="#ffffff">
                 <button class="copy-button" onclick="copyHex()">Copy</button>
+            </div>
+        </div>
+
+        <!-- Color History Section -->
+        <div class="history-section">
+            <div class="history-header">
+                <h3 class="history-title">Recent Colors</h3>
+                <button class="clear-history-button" id="clear-history">Clear</button>
+            </div>
+            <div class="history-list" id="history-list">
+                <div class="history-empty">
+                    No colors saved yet. Enter or paste colors to see them here.
+                </div>
             </div>
         </div>
     </div>
