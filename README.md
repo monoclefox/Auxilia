@@ -1,8 +1,8 @@
 # Auxilia
 
-**Professional color tools for designers building accessible, beautiful products**
+**Color tools that actually work (and look good doing it)**
 
-Auxilia is a comprehensive suite of color utilities designed with Swiss typography principles and modern web standards. Built for designers who care about accessibility, precision, and workflow efficiency.
+Four simple tools for designers who are tired of bad color pickers and want something that just works. No sign-ups, no subscriptions, no nonsense.
 
 ## 🛠️ Tools
 
@@ -43,35 +43,18 @@ Convert design tokens between multiple formats. Perfect for multi-platform desig
 - Batch processing
 - Design system workflow optimization
 
-## 🎨 Design Philosophy
-
-Auxilia follows **Swiss Design** (International Typographic Style) principles:
-
-- **Typography**: Inter font family for authentic Swiss aesthetics
-- **Grid System**: Mathematical precision in layout
-- **Minimal Interface**: Focus on functionality over decoration
-- **Accessibility First**: WCAG compliance built into every tool
-
 ## 🚀 Getting Started
 
 ### Quick Start
-1. Clone this repository
-2. Open `auxilia.html` in your browser
+1. Clone this repository or download the files
+2. Open `auxilia.html` directly in your browser
 3. Navigate to any tool from the main interface
 
-### Local Development
-```bash
-# Clone the repository
-git clone https://github.com/monoclefox/Auxilia.git
-
-# Navigate to project
-cd Auxilia
-
-# Serve locally (any HTTP server)
-python -m http.server 8000
-# or
-npx serve .
-```
+### Usage
+This is a static HTML site - no server required! Simply:
+- Double-click `auxilia.html` to open in your default browser
+- Or drag and drop any HTML file into your browser window
+- All tools work offline and locally
 
 ## 📁 Project Structure
 
@@ -88,45 +71,6 @@ Auxilia/
 └── .gitignore                   # Git ignore patterns
 ```
 
-## 🔧 Technology Stack
+## 💜 Made for Jenn by Geoff
 
-- **Frontend**: Vanilla HTML, CSS, JavaScript
-- **Color Library**: [Culori](https://github.com/Evercoder/culori) for color space conversions
-- **Typography**: [Inter](https://rsms.me/inter/) for Swiss design authenticity
-- **Standards**: WCAG 2.1, modern CSS Grid/Flexbox
-
-## 🎯 Browser Support
-
-- Chrome/Edge 88+
-- Firefox 87+
-- Safari 14+
-- Mobile browsers (iOS Safari, Chrome Mobile)
-
-## 🤝 Contributing
-
-This project welcomes contributions! Areas for improvement:
-
-- Additional color space support
-- Enhanced accessibility features
-- Mobile-first responsive improvements
-- Performance optimizations
-
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
-## 💜 Credits
-
-**Made for Jenn by Geoff**
-
-Built with modern web technologies and Swiss design principles for designers who value precision, accessibility, and beautiful user experiences.
-
----
-
-### Recent Updates
-
-- ✨ Added automatic # prefix handling for hex input
-- 🔧 Fixed OKLCH decimal precision formatting
-- 📁 Added comprehensive .gitignore
-- 🎨 Implemented Swiss typography with Inter font
-- ♿ Enhanced accessibility compliance features
+Because good color tools shouldn't be this hard to find.
