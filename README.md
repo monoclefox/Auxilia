@@ -56,19 +56,17 @@ This is a static HTML site - no server required! Simply:
 - Or drag and drop any HTML file into your browser window
 - All tools work offline and locally
 
-## 📁 Project Structure
+## 🧪 Testing
 
-```
-Auxilia/
-├── README.md                    # Project documentation
-├── auxilia.html                 # Main landing page
-├── styles.css                   # Shared Swiss design system
-├── oklch-converter.html         # OKLCH ↔ Hex converter tool
-├── accessibility-checker.html   # WCAG accessibility checker
-├── palette-generator.html       # Color palette generator
-├── design-token-manager.html    # Design token converter
-├── index.html                   # Simple redirect to auxilia.html
-└── .gitignore                   # Git ignore patterns
+```bash
+# Install dependencies (one time setup)
+npm install
+
+# Run all tests
+npm test
+
+# Run tests with UI for debugging
+npm run test:ui
 ```
 
 ## 💜 Made for Jenn by Geoff
