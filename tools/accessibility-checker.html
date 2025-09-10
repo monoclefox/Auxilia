@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Accessibility Checker - Auxilia</title>
     <script src="https://cdn.jsdelivr.net/npm/culori@4/bundled/culori.umd.js"></script>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../styles.css">
     <style>
         .checker-grid {
             display: grid;
@@ -152,9 +152,9 @@
 </head>
 <body>
     <nav class="nav">
-        <a href="auxilia.html" class="nav-brand">Auxilia</a>
+        <a href="../auxilia.html" class="nav-brand">Auxilia</a>
         <ul class="nav-links">
-            <li><a href="auxilia.html">Home</a></li>
+            <li><a href="../auxilia.html">Home</a></li>
             <li><a href="oklch-converter.html">OKLCH Converter</a></li>
             <li><a href="accessibility-checker.html" class="active">Accessibility Checker</a></li>
             <li><a href="palette-generator.html">Palette Generator</a></li>
@@ -240,154 +240,8 @@
         Made for Jenn<span class="heart">💜</span>by Geoff
     </footer>
 
-    <script>
-        // Get DOM elements
-        const foregroundInput = document.getElementById('foreground-color');
-        const backgroundInput = document.getElementById('background-color');
-        const simulateInput = document.getElementById('simulate-color');
-        
-        const foregroundSwatch = document.getElementById('foreground-swatch');
-        const backgroundSwatch = document.getElementById('background-swatch');
-        const simulateSwatch = document.getElementById('simulate-swatch');
-        
-        const contrastRatio = document.getElementById('contrast-ratio');
-        const textPreview = document.getElementById('text-preview');
-        
-        // Badge elements
-        const aaNormal = document.getElementById('aa-normal');
-        const aaLarge = document.getElementById('aa-large');
-        const aaaNormal = document.getElementById('aaa-normal');
-        const aaaLarge = document.getElementById('aaa-large');
-        
-        // Color blindness swatches
-        const originalSwatch = document.getElementById('original-swatch');
-        const protanopiaSwatch = document.getElementById('protanopia-swatch');
-        const deuteranopiaSwatch = document.getElementById('deuteranopia-swatch');
-        const tritanopiaSwatch = document.getElementById('tritanopia-swatch');
-
-        // WCAG contrast ratio calculation
-        function calculateContrastRatio(color1, color2) {
-            try {
-                const rgb1 = culori.rgb(color1);
-                const rgb2 = culori.rgb(color2);
-                
-                if (!rgb1 || !rgb2) return null;
-                
-                const l1 = getRelativeLuminance(rgb1);
-                const l2 = getRelativeLuminance(rgb2);
-                
-                const lighter = Math.max(l1, l2);
-                const darker = Math.min(l1, l2);
-                
-                return (lighter + 0.05) / (darker + 0.05);
-            } catch (error) {
-                return null;
-            }
-        }
-        
-        function getRelativeLuminance(rgb) {
-            const { r, g, b } = rgb;
-            
-            const srgb = [r, g, b].map(c => {
-                return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
-            });
-            
-            return 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2];
-        }
-        
-        function updateBadge(element, passes, label) {
-            element.textContent = label;
-            element.className = `badge ${passes ? 'badge-pass' : 'badge-fail'}`;
-        }
-        
-        function updateContrastChecker() {
-            const fg = foregroundInput.value.trim();
-            const bg = backgroundInput.value.trim();
-            
-            // Update swatches
-            foregroundSwatch.style.backgroundColor = fg;
-            backgroundSwatch.style.backgroundColor = bg;
-            
-            // Calculate contrast ratio
-            const ratio = calculateContrastRatio(fg, bg);
-            
-            if (ratio) {
-                contrastRatio.textContent = ratio.toFixed(2);
-                
-                // Update WCAG compliance badges
-                updateBadge(aaNormal, ratio >= 4.5, 'AA Normal');
-                updateBadge(aaLarge, ratio >= 3.0, 'AA Large');
-                updateBadge(aaaNormal, ratio >= 7.0, 'AAA Normal');
-                updateBadge(aaaLarge, ratio >= 4.5, 'AAA Large');
-                
-                // Update text preview
-                textPreview.style.setProperty('--bg-color', bg);
-                textPreview.style.setProperty('--text-color', fg);
-            } else {
-                contrastRatio.textContent = '—';
-                updateBadge(aaNormal, false, 'AA Normal');
-                updateBadge(aaLarge, false, 'AA Large');
-                updateBadge(aaaNormal, false, 'AAA Normal');
-                updateBadge(aaaLarge, false, 'AAA Large');
-            }
-        }
-        
-        // Color blindness simulation matrices
-        const colorBlindMatrices = {
-            protanopia: [
-                [0.567, 0.433, 0],
-                [0.558, 0.442, 0],
-                [0, 0.242, 0.758]
-            ],
-            deuteranopia: [
-                [0.625, 0.375, 0],
-                [0.7, 0.3, 0],
-                [0, 0.3, 0.7]
-            ],
-            tritanopia: [
-                [0.95, 0.05, 0],
-                [0, 0.433, 0.567],
-                [0, 0.475, 0.525]
-            ]
-        };
-        
-        function simulateColorBlindness(color, type) {
-            try {
-                const rgb = culori.rgb(color);
-                if (!rgb) return color;
-                
-                const matrix = colorBlindMatrices[type];
-                const r = rgb.r * matrix[0][0] + rgb.g * matrix[0][1] + rgb.b * matrix[0][2];
-                const g = rgb.r * matrix[1][0] + rgb.g * matrix[1][1] + rgb.b * matrix[1][2];
-                const b = rgb.r * matrix[2][0] + rgb.g * matrix[2][1] + rgb.b * matrix[2][2];
-                
-                return culori.formatHex({ mode: 'rgb', r: Math.max(0, Math.min(1, r)), g: Math.max(0, Math.min(1, g)), b: Math.max(0, Math.min(1, b)) });
-            } catch (error) {
-                return color;
-            }
-        }
-        
-        function updateColorBlindnessSimulation() {
-            const color = simulateInput.value.trim();
-            
-            // Update main swatch
-            simulateSwatch.style.backgroundColor = color;
-            originalSwatch.style.backgroundColor = color;
-            
-            // Simulate different types of color blindness
-            protanopiaSwatch.style.backgroundColor = simulateColorBlindness(color, 'protanopia');
-            deuteranopiaSwatch.style.backgroundColor = simulateColorBlindness(color, 'deuteranopia');
-            tritanopiaSwatch.style.backgroundColor = simulateColorBlindness(color, 'tritanopia');
-        }
-        
-        // Event listeners
-        foregroundInput.addEventListener('input', updateContrastChecker);
-        backgroundInput.addEventListener('input', updateContrastChecker);
-        simulateInput.addEventListener('input', updateColorBlindnessSimulation);
-        
-        // Initial updates
-        updateContrastChecker();
-        updateColorBlindnessSimulation();
-    </script>
+    <script src="../js/shared/color-utils.js"></script>
+    <script src="../js/shared/dom-helpers.js"></script>
+    <script src="../js/accessibility-checker.js"></script>
 </body>
 </html>

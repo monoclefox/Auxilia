@@ -67,3 +67,9 @@ temp/
 # Build outputs
 dist/
 build/
+
+# Testing
+test-results/
+playwright-report/
+playwright/.cache/
+.lighthouseci/

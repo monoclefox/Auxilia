@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Token Converter - Auxilia</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .input-section {
+            background: var(--aux-surface);
+            border: 1px solid var(--aux-border);
+            padding: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+        
+        .input-tabs {
+            display: flex;
+            gap: var(--space-3);
+            margin-bottom: var(--space-5);
+            border-bottom: 1px solid var(--aux-border);
+            padding-bottom: var(--space-4);
+        }
+        
+        .input-tab {
+            padding: var(--space-2) var(--space-4);
+            border: 1px solid transparent;
+            background: var(--aux-bg);
+            color: var(--aux-ink-2);
+            cursor: pointer;
+            transition: all var(--aux-speed) var(--aux-ease);
+            font-weight: 700;
+            font-size: var(--fs-20);
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+        
+        .input-tab.active {
+            background: var(--aux-accent);
+            color: var(--aux-bg);
+            border-color: var(--aux-accent);
+        }
+        
+        .input-content {
+            display: none;
+        }
+        
+        .input-content.active {
+            display: block;
+        }
+        
+        .token-textarea {
+            width: 100%;
+            height: 300px;
+            padding: var(--space-5);
+            border: 1px solid var(--aux-border);
+            font-family: 'Courier New', monospace;
+            font-size: var(--fs-20);
+            resize: vertical;
+            background: var(--aux-bg);
+            color: var(--aux-ink);
+        }
+        
+        .token-textarea:focus {
+            outline: 2px solid var(--aux-accent);
+            outline-offset: 0;
+        }
+        
+        .file-upload {
+            border: 2px dashed var(--aux-border);
+            padding: var(--space-8);
+            text-align: center;
+            background: var(--aux-surface);
+            transition: all var(--aux-speed) var(--aux-ease);
+            cursor: pointer;
+        }
+        
+        .file-upload:hover {
+            border-color: var(--aux-accent);
+            transform: translateY(-1px);
+        }
+        
+        .file-upload.dragover {
+            border-color: var(--aux-accent);
+            background: var(--aux-bg);
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        
+        .upload-hint {
+            color: #999;
+            font-size: 0.9rem;
+        }
+        
+        .action-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            align-items: center;
+        }
+        
+        .parse-btn {
+            background: var(--aux-ink);
+            color: var(--aux-bg);
+            border: 1px solid var(--aux-ink);
+            padding: var(--space-3) var(--space-5);
+            cursor: pointer;
+            font-family: var(--aux-font-sans);
+            font-weight: 700;
+            font-size: var(--fs-20);
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            transition: all var(--aux-speed) var(--aux-ease);
+        }
+        
+        .parse-btn:hover {
+            transform: translateY(-1px);
+        }
+        
+        .parse-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .validation-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+        
+        .status-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+        
+        .status-valid {
+            background: #28a745;
+        }
+        
+        .status-invalid {
+            background: #dc3545;
+        }
+        
+        .status-pending {
+            background: #ffc107;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-8);
+        }
+        
+        .preview-section, .output-section {
+            background: var(--aux-surface);
+            border: 1px solid var(--aux-border);
+            padding: var(--space-6);
+            min-width: 0;
+        }
+        
+        .section-title {
+            font-size: var(--fs-50);
+            font-weight: 700;
+            margin-bottom: var(--space-5);
+            color: var(--aux-ink);
+            text-transform: uppercase;
+            letter-spacing: 0.015em;
+        }
+        
+        .token-tree {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        
+        .token-group {
+            border-bottom: 1px solid #e1e5e9;
+        }
+        
+        .token-group:last-child {
+            border-bottom: none;
+        }
+        
+        .token-group-header {
+            padding: 12px 15px;
+            background: #f0f0f0;
+            font-weight: 600;
+            color: #555;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .token-group-header:hover {
+            background: #e9ecef;
+        }
+        
+        .group-toggle {
+            font-size: 0.8rem;
+            transition: transform 0.2s ease;
+        }
+        
+        .group-toggle.collapsed {
+            transform: rotate(-90deg);
+        }
+        
+        .token-list {
+            display: none;
+            padding: 10px 0;
+        }
+        
+        .token-list.expanded {
+            display: block;
+        }
+        
+        .token-item {
+            padding: 8px 15px;
+            border-left: 3px solid transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .token-item:hover {
+            background: white;
+            border-left-color: #667eea;
+        }
+        
+        .token-name {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .token-value {
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: #666;
+            background: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .color-token .token-value {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .color-swatch {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+        }
+        
+        .output-tabs {
+            display: flex;
+            gap: var(--space-3);
+            margin-bottom: var(--space-5);
+            flex-wrap: wrap;
+        }
+        
+        .output-tab {
+            padding: var(--space-2) var(--space-3);
+            border: 1px solid var(--aux-border);
+            background: var(--aux-bg);
+            color: var(--aux-ink-2);
+            cursor: pointer;
+            transition: all var(--aux-speed) var(--aux-ease);
+            font-size: var(--fs-20);
+            font-weight: 400;
+            font-family: var(--aux-font-sans);
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+        
+        .output-tab.active {
+            border-color: var(--aux-accent);
+            background: var(--aux-accent);
+            color: var(--aux-bg);
+        }
+        
+        .output-content {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            max-height: 400px;
+            min-height: 400px;
+            overflow-y: auto;
+            overflow-x: auto;
+            border: 1px solid #e1e5e9;
+            position: relative;
+            width: 100%;
+        }
+        
+        .output-content pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-width: 100%;
+        }
+        
+        .copy-output-btn {
+            position: absolute;
+            top: var(--space-3);
+            right: var(--space-3);
+            padding: var(--space-2) var(--space-3);
+            background: var(--aux-ink);
+            color: var(--aux-bg);
+            border: 1px solid var(--aux-ink);
+            cursor: pointer;
+            font-size: var(--fs-10);
+            font-weight: 700;
+            font-family: var(--aux-font-sans);
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            transition: all var(--aux-speed) var(--aux-ease);
+        }
+        
+        .copy-output-btn:hover {
+            transform: translateY(-1px);
+        }
+        
+        .export-all-btn {
+            width: 100%;
+            margin-top: var(--space-5);
+            padding: var(--space-3) var(--space-5);
+            background: var(--aux-ink);
+            color: var(--aux-bg);
+            border: 1px solid var(--aux-ink);
+            cursor: pointer;
+            font-family: var(--aux-font-sans);
+            font-weight: 700;
+            font-size: var(--fs-20);
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            transition: all var(--aux-speed) var(--aux-ease);
+        }
+        
+        .export-all-btn:hover {
+            transform: translateY(-1px);
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+            font-style: italic;
+        }
+        
+        .examples-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .example-btn {
+            padding: var(--space-4);
+            border: 1px solid var(--aux-border);
+            background: var(--aux-bg);
+            color: var(--aux-ink);
+            cursor: pointer;
+            font-family: var(--aux-font-sans);
+            font-weight: 700;
+            font-size: var(--fs-20);
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            transition: all var(--aux-speed) var(--aux-ease);
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        .example-btn:hover {
+            border-color: var(--aux-accent);
+            background: var(--aux-accent);
+            color: var(--aux-bg);
+            transform: translateY(-1px);
+        }
+        
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .input-tabs, .output-tabs {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .action-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            
+            .token-textarea {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <a href="../auxilia.html" class="nav-brand">Auxilia</a>
+        <ul class="nav-links">
+            <li><a href="../auxilia.html">Home</a></li>
+            <li><a href="oklch-converter.html">OKLCH Converter</a></li>
+            <li><a href="accessibility-checker.html">Accessibility Checker</a></li>
+            <li><a href="palette-generator.html">Palette Generator</a></li>
+            <li><a href="design-token-manager.html" class="active">Token Converter</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-container">
+        <div class="page-header">
+            <h1>Design Token Converter</h1>
+            <p class="description">
+                Convert and transform design tokens between multiple formats. 
+                Supports W3C DTCG standards and popular frameworks like Tailwind, iOS, Android.
+            </p>
+        </div>
+
+            <!-- Input Section -->
+            <div class="input-section">
+                <div class="input-tabs">
+                    <button class="input-tab active" data-tab="paste">Paste Tokens</button>
+                    <button class="input-tab" data-tab="upload">Upload File</button>
+                    <button class="input-tab" data-tab="examples">Examples</button>
+                </div>
+                
+                <div class="input-content active" data-content="paste">
+                    <label for="token-input">Paste your design tokens (JSON, CSS Variables, SCSS):</label>
+                    <textarea id="token-input" class="token-textarea" placeholder='Example JSON format:
+{
+  "color": {
+    "primary": {
+      "500": {
+        "value": "#667eea",
+        "type": "color"
+      }
+    }
+  },
+  "spacing": {
+    "small": {
+      "value": "8px",
+      "type": "dimension"
+    }
+  }
+}'></textarea>
+                </div>
+                
+                <div class="input-content" data-content="upload">
+                    <div class="file-upload" id="file-upload">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-text">Drop a file here or click to upload</div>
+                        <div class="upload-hint">Supports .json, .css, .scss files</div>
+                        <input type="file" class="file-input" id="file-input" accept=".json,.css,.scss,.txt">
+                    </div>
+                </div>
+                
+                <div class="input-content" data-content="examples">
+                    <div class="examples-list">
+                        <button class="example-btn" data-example="w3c">W3C DTCG Format</button>
+                        <button class="example-btn" data-example="css">CSS Variables</button>
+                        <button class="example-btn" data-example="scss">SCSS Variables</button>
+                        <button class="example-btn" data-example="figma">Figma Tokens</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Bar -->
+            <div class="action-bar">
+                <button id="parse-btn" class="parse-btn">Parse Tokens</button>
+                <div class="validation-status" id="validation-status">
+                    <span class="status-icon status-pending"></span>
+                    <span>Ready to parse</span>
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="content-grid">
+                <!-- Token Preview Section -->
+                <div class="preview-section">
+                    <h2 class="section-title">Token Preview</h2>
+                    <div id="token-tree" class="token-tree">
+                        <div class="empty-state">
+                            Parse tokens to see preview
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Output Section -->
+                <div class="output-section">
+                    <h2 class="section-title">Generated Formats</h2>
+                    
+                    <div class="output-tabs">
+                        <button class="output-tab active" data-format="css">CSS</button>
+                        <button class="output-tab" data-format="scss">SCSS</button>
+                        <button class="output-tab" data-format="js">JavaScript</button>
+                        <button class="output-tab" data-format="json">JSON</button>
+                        <button class="output-tab" data-format="tailwind">Tailwind</button>
+                        <button class="output-tab" data-format="ios">iOS</button>
+                        <button class="output-tab" data-format="android">Android</button>
+                    </div>
+                    
+                    <div class="output-content" id="output-content">
+                        <button class="copy-output-btn" onclick="copyOutput()">Copy</button>
+                        <pre id="output-code">Parse tokens to see output formats</pre>
+                    </div>
+                    
+                    <button class="export-all-btn" id="export-all-btn" onclick="exportAll()" disabled>
+                        Export All Formats
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        Made for Jenn<span class="heart">💜</span>by Geoff
+    </footer>
+
+    <script src="../js/shared/color-utils.js"></script>
+    <script src="../js/shared/dom-helpers.js"></script>
+    <script src="../js/design-token-manager.js"></script>
+</body>
+</html>

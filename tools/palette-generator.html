@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Palette Generator - Auxilia</title>
+    <script src="https://cdn.jsdelivr.net/npm/culori@4/bundled/culori.umd.js"></script>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .controls-section {
+            background: var(--aux-surface);
+            border: 1px solid var(--aux-border);
+            padding: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+        
+        .control-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: var(--space-6);
+            align-items: end;
+        }
+        
+        .palettes-grid {
+            display: grid;
+            gap: var(--space-8);
+            margin-bottom: var(--space-8);
+        }
+        
+        .palette-card {
+            background: var(--aux-surface);
+            border: 1px solid var(--aux-border);
+            padding: var(--space-6);
+        }
+        
+        .palette-title {
+            font-size: var(--fs-50);
+            font-weight: 700;
+            margin-bottom: var(--space-5);
+            color: var(--aux-ink);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-transform: uppercase;
+            letter-spacing: 0.015em;
+        }
+        
+        .copy-palette-btn {
+            padding: var(--space-2) var(--space-3);
+            font-size: var(--fs-10);
+            background: var(--aux-ink);
+            color: var(--aux-bg);
+            border: 1px solid var(--aux-ink);
+            cursor: pointer;
+            font-family: var(--aux-font-sans);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            transition: all var(--aux-speed) var(--aux-ease);
+        }
+        
+        .copy-palette-btn:hover {
+            transform: translateY(-1px);
+        }
+        
+        .color-harmony-row {
+            display: flex;
+            gap: var(--space-3);
+            margin-bottom: var(--space-6);
+        }
+        
+        .color-swatch {
+            flex: 1;
+            height: 80px;
+            border: 1px solid var(--aux-border);
+            display: flex;
+            align-items: end;
+            justify-content: center;
+            padding: var(--space-2);
+            color: var(--aux-bg);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            font-size: var(--fs-20);
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform var(--aux-speed) var(--aux-ease);
+        }
+        
+        .color-swatch:hover {
+            transform: translateY(-1px);
+        }
+        
+        .color-ramp {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: var(--space-2);
+            margin-top: var(--space-4);
+        }
+        
+        .ramp-swatch {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--fs-10);
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform var(--aux-speed) var(--aux-ease);
+            border: 1px solid var(--aux-border);
+        }
+        
+        .ramp-swatch:hover {
+            transform: scale(1.05);
+        }
+        
+        .ramp-label {
+            font-size: var(--fs-10);
+            text-align: center;
+            margin-top: var(--space-1);
+            color: var(--aux-ink-2);
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+        
+        .export-section {
+            background: var(--aux-surface);
+            border: 1px solid var(--aux-border);
+            padding: var(--space-6);
+        }
+        
+        .export-tabs {
+            display: flex;
+            gap: var(--space-3);
+            margin-bottom: var(--space-5);
+        }
+        
+        .export-tab {
+            padding: var(--space-2) var(--space-4);
+            border: 1px solid var(--aux-border);
+            background: var(--aux-bg);
+            color: var(--aux-ink-2);
+            cursor: pointer;
+            transition: all var(--aux-speed) var(--aux-ease);
+            font-size: var(--fs-20);
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+        
+        .export-tab.active {
+            border-color: var(--aux-accent);
+            background: var(--aux-accent);
+            color: var(--aux-bg);
+        }
+        
+        .export-content {
+            background: var(--aux-bg);
+            padding: var(--space-5);
+            font-family: 'Courier New', monospace;
+            font-size: var(--fs-20);
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--aux-border);
+            color: var(--aux-ink);
+        }
+        
+        
+        @media (max-width: 768px) {
+            .control-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .color-harmony-row {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .color-swatch {
+                height: 60px;
+            }
+            
+            .color-ramp {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <a href="../auxilia.html" class="nav-brand">Auxilia</a>
+        <ul class="nav-links">
+            <li><a href="../auxilia.html">Home</a></li>
+            <li><a href="oklch-converter.html">OKLCH Converter</a></li>
+            <li><a href="accessibility-checker.html">Accessibility Checker</a></li>
+            <li><a href="palette-generator.html" class="active">Palette Generator</a></li>
+            <li><a href="design-token-manager.html">Token Converter</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-container">
+        <div class="page-header">
+            <h1>Palette Generator</h1>
+            <p class="description">
+                Generate harmonious color palettes and accessible color ramps for your design system.
+            </p>
+        </div>
+
+            <!-- Controls Section -->
+            <div class="controls-section">
+                <div class="control-grid">
+                    <div class="input-group">
+                        <label for="base-color">Base Color</label>
+                        <input type="text" id="base-color" value="#667eea" placeholder="#667eea">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="harmony-type">Harmony Type</label>
+                        <select id="harmony-type" class="harmony-select">
+                            <option value="monochromatic">Monochromatic</option>
+                            <option value="complementary">Complementary</option>
+                            <option value="triadic">Triadic</option>
+                            <option value="tetradic">Tetradic</option>
+                            <option value="analogous">Analogous</option>
+                            <option value="split-complementary">Split Complementary</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <button id="generate-btn" class="generate-btn">Generate Palette</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generated Palettes -->
+            <div class="palettes-grid" id="palettes-container">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+
+            <!-- Export Section -->
+            <div class="export-section">
+                <h2 class="section-title">Export Palette</h2>
+                
+                <div class="export-tabs">
+                    <button class="export-tab active" data-format="css">CSS Variables</button>
+                    <button class="export-tab" data-format="json">JSON</button>
+                    <button class="export-tab" data-format="tailwind">Tailwind</button>
+                    <button class="export-tab" data-format="figma">Figma Tokens</button>
+                </div>
+                
+                <div class="export-content" id="export-content">
+                    <pre id="export-code">/* Generate a palette to see export options */</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        Made for Jenn<span class="heart">💜</span>by Geoff
+    </footer>
+
+    <script src="../js/shared/color-utils.js"></script>
+    <script src="../js/shared/dom-helpers.js"></script>
+    <script src="../js/palette-generator.js"></script>
+</body>
+</html>
