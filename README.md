@@ -1,6 +1,6 @@
 # Auxilia
 
-**Color tools that actually work (and look good doing it)**
+**Color tools that actually work**
 
 Four simple tools for designers who are tired of bad color pickers and want something that just works. No sign-ups, no subscriptions, no nonsense.
 
